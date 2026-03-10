@@ -1,0 +1,31 @@
+
+
+
+基于开发规范开发一个表单页面，用于创建或者修改一个鱼缸，可以传入一个Aquarium? aquariulm来载入老数据，保存时pop一个Aquarium对象
+
+在表单页面，你需要将复用的输入框或选择器提取为单独的widget，注意要使用stateless widget抽离widget，不要使用function创建widget
+
+输入框使用这个代替TextEditingController：
+
+/// 封装了取值，焦点，控制器方法
+class InputHelper {
+  final String? defaultText;
+
+  InputHelper({this.defaultText})
+      : controller = TextEditingController(text: defaultText);
+
+  final TextEditingController controller;
+
+  String get text => controller.value.text;
+
+  set text(String? t) {
+    controller.value = TextEditingValue(text: t ?? '');
+  }
+
+  final FocusNode focusNode = FocusNode();
+}
+
+
+你按这个顺序开始开发：
+1. 阅读开发规范
+2. 开始开发页面代码

@@ -1,4 +1,5 @@
 import 'package:aquarium_diary/database/enums.dart';
+import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
 
 part 'aquarium.g.dart';
@@ -40,7 +41,7 @@ class Aquarium {
     required this.createdAt,
     this.notes,
   });
-  
+
   factory Aquarium.fromJson(Map<String, dynamic> json) {
     return Aquarium(
       name: json['name'] as String,
