@@ -2,13 +2,14 @@
 
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/pages/forms/widgets/formTools.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/views/cancelFocus.dart';
 import 'package:flutter/material.dart';
 import 'package:tapped/tapped.dart';
 
-// ---------- 表单页面 ----------
 class AquariumFormPage extends StatefulWidget {
   final Aquarium? aquarium; // 传入 null 表示新建，否则编辑
 
@@ -67,7 +68,7 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
     // 验证名称
     if (_nameHelper.text.trim().isEmpty) {
       setState(() {
-        _nameError = '鱼缸名称不能为空';
+        _nameError = '请输入鱼缸名称';
       });
       return;
     }
@@ -145,324 +146,169 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
   Widget build(BuildContext context) {
     final isEditing = widget.aquarium != null;
     return Scaffold(
+      // extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: StText.medium(isEditing ? '编辑鱼缸' : '新建鱼缸'),
-        backgroundColor: StColor.primary,
-        foregroundColor: StColor.white,
+        title: StText.medium(
+          isEditing ? '编辑鱼缸' : '新建鱼缸',
+          style: const TextStyle(color: StColor.darkGray),
+        ),
+        backgroundColor: StColor.lightGray,
+        // elevation: 0,
+        iconTheme: const IconThemeData(color: StColor.darkGray),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 名称输入
-            _LabeledTextField(
-              label: '鱼缸名称',
-              helper: _nameHelper,
-              errorText: _nameError,
-              onChanged: (_) {
-                if (_nameError != null) {
-                  setState(() => _nameError = null);
-                }
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // 结构选择
-            _LabeledDropdown<AquariumStructure>(
-              label: '鱼缸结构',
-              value: _selectedStructure,
-              items: AquariumStructure.values,
-              itemDisplayName: (AquariumStructure e) => e.label,
-              onChanged: (value) => setState(() => _selectedStructure = value),
-            ),
-            const SizedBox(height: 16),
-
-            // 购买日期
-            _LabeledDatePicker(
-              label: '购买时间',
-              date: _purchaseDate,
-              onChanged: (date) => setState(() => _purchaseDate = date),
-            ),
-            const SizedBox(height: 16),
-
-            // 尺寸三行
-            Row(
-              children: [
-                Expanded(
-                  child: _LabeledTextField(
-                    label: '长度(mm)',
-                    helper: _lengthHelper,
-                    keyboardType: TextInputType.number,
+      body: TapToCancelFocus(
+        child: SafeArea(
+          child: Column(
+            children: [
+              // 可滑动的卡片区域
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _LabeledTextField(
-                    label: '宽度(mm)',
-                    helper: _widthHelper,
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _LabeledTextField(
-                    label: '高度(mm)',
-                    helper: _heightHelper,
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // 水体容量
-            _LabeledTextField(
-              label: '水体容量(L)',
-              helper: _capacityHelper,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // 是否启用
-            _LabeledSwitch(
-              label: '是否启用',
-              value: _isActive,
-              onChanged: (v) => setState(() => _isActive = v),
-            ),
-            const SizedBox(height: 16),
-
-            // 备注
-            _LabeledTextField(label: '备注', helper: _notesHelper, maxLines: 3),
-            const SizedBox(height: 32),
-
-            // 保存按钮
-            Center(
-              child: Tapped(
-                onTap: _handleSave,
-                child: Container(
-                  width: double.infinity,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: StColor.primary,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: StText.medium(
-                      '保存',
-                      style: const TextStyle(color: StColor.white),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: StColor.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 12,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 所有表单字段（无保存按钮）
+                        FormInput(
+                          label: '鱼缸名称',
+                          hintText: '请输入鱼缸名称',
+                          helper: _nameHelper,
+                          errorText: _nameError,
+                          onChanged: (_) {
+                            if (_nameError != null) {
+                              setState(() => _nameError = null);
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        FormDropdown<AquariumStructure>(
+                          label: '鱼缸结构',
+                          value: _selectedStructure,
+                          items: AquariumStructure.values,
+                          itemDisplayName: (e) => e.label,
+                          onChanged: (v) =>
+                              setState(() => _selectedStructure = v),
+                        ),
+                        const SizedBox(height: 20),
+                        FormDatePicker(
+                          label: '购买时间',
+                          date: _purchaseDate,
+                          onChanged: (d) => setState(() => _purchaseDate = d),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: FormInput(
+                                label: '长度(cm)',
+                                hintText: '填写长度',
+                                helper: _lengthHelper,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FormInput(
+                                label: '宽度/深度(cm)',
+                                hintText: '填写深度',
+                                helper: _widthHelper,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FormInput(
+                                label: '高度(cm)',
+                                hintText: '填写高度',
+                                helper: _heightHelper,
+                                keyboardType: TextInputType.number,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        FormInput(
+                          label: '水体容量(L)',
+                          hintText: '填写水体，方便记录换水数据',
+                          helper: _capacityHelper,
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        FormSwitch(
+                          label: '显示',
+                          value: _isActive,
+                          onChanged: (v) => setState(() => _isActive = v),
+                        ),
+                        const SizedBox(height: 20),
+                        FormInput(
+                          label: '备注',
+                          helper: _notesHelper,
+                          maxLines: 3,
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------- 复用组件 ----------
-
-/// 带标签的文本输入框
-class _LabeledTextField extends StatelessWidget {
-  final String label;
-  final InputHelper helper;
-  final String? errorText;
-  final TextInputType? keyboardType;
-  final int? maxLines;
-  final void Function(String)? onChanged;
-
-  const _LabeledTextField({
-    Key? key,
-    required this.label,
-    required this.helper,
-    this.errorText,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        StText.medium(label, style: const TextStyle(color: StColor.darkGray)),
-        const SizedBox(height: 4),
-        TextField(
-          controller: helper.controller,
-          focusNode: helper.focusNode,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
-          onChanged: onChanged,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: StColor.halfGray),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: StColor.primary, width: 2),
-            ),
-            errorText: errorText,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-          ),
-          style: const TextStyle(color: StColor.black),
-        ),
-      ],
-    );
-  }
-}
-
-/// 带标签的下拉选择器
-class _LabeledDropdown<T> extends StatelessWidget {
-  final String label;
-  final T? value;
-  final List<T> items;
-  final String Function(T) itemDisplayName;
-  final void Function(T?) onChanged;
-
-  const _LabeledDropdown({
-    Key? key,
-    required this.label,
-    required this.value,
-    required this.items,
-    required this.itemDisplayName,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        StText.medium(label, style: const TextStyle(color: StColor.darkGray)),
-        const SizedBox(height: 4),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: StColor.halfGray),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<T>(
-              value: value,
-              hint: StText.normal('请选择'),
-              isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: StColor.gray),
-              items: items.map((e) {
-                return DropdownMenuItem<T>(
-                  value: e,
-                  child: StText.normal(itemDisplayName(e)),
-                );
-              }).toList(),
-              onChanged: onChanged,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// 带标签的日期选择器
-class _LabeledDatePicker extends StatelessWidget {
-  final String label;
-  final DateTime? date;
-  final void Function(DateTime?) onChanged;
-
-  const _LabeledDatePicker({
-    Key? key,
-    required this.label,
-    required this.date,
-    required this.onChanged,
-  }) : super(key: key);
-
-  Future<void> _selectDate(BuildContext context) async {
-    final initialDate = date ?? DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-    );
-    if (picked != null) {
-      onChanged(picked);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        StText.medium(label, style: const TextStyle(color: StColor.darkGray)),
-        const SizedBox(height: 4),
-        Tapped(
-          onTap: () => _selectDate(context),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            decoration: BoxDecoration(
-              border: Border.all(color: StColor.halfGray),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                StText.normal(
-                  date == null ? '未选择' : _formatDate(date!),
-                  style: TextStyle(
-                    color: date == null ? StColor.halfGray : StColor.black,
+              // 固定在底部的保存按钮
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Tapped(
+                  onTap: _handleSave,
+                  child: Container(
+                    width: double.infinity,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: StColor.primary,
+                      // gradient: LinearGradient(
+                      //   colors: StColor.gradientDeepOcean,
+                      // ),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: StText.medium(
+                        '保存',
+                        style: const TextStyle(
+                          color: StColor.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                Icon(Icons.calendar_today, size: 16, color: StColor.gray),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      ],
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-}
-
-/// 带标签的开关
-class _LabeledSwitch extends StatelessWidget {
-  final String label;
-  final bool value;
-  final void Function(bool) onChanged;
-
-  const _LabeledSwitch({
-    Key? key,
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        StText.medium(label, style: const TextStyle(color: StColor.darkGray)),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeColor: StColor.primary,
-          activeTrackColor: StColor.primary.withOpacity(0.5),
-        ),
-      ],
+      ),
     );
   }
 }
