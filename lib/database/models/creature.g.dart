@@ -60,10 +60,10 @@ const CreatureSchema = CollectionSchema(
       name: r'isFavorite',
       type: IsarType.bool,
     ),
-    r'mainImage': PropertySchema(
+    r'mainImageId': PropertySchema(
       id: 8,
-      name: r'mainImage',
-      type: IsarType.longList,
+      name: r'mainImageId',
+      type: IsarType.long,
     ),
     r'nickname': PropertySchema(
       id: 9,
@@ -82,10 +82,10 @@ const CreatureSchema = CollectionSchema(
       name: r'purchaseDate',
       type: IsarType.dateTime,
     ),
-    r'purchaseScreenshot': PropertySchema(
+    r'purchaseScreenshotId': PropertySchema(
       id: 14,
-      name: r'purchaseScreenshot',
-      type: IsarType.longList,
+      name: r'purchaseScreenshotId',
+      type: IsarType.long,
     ),
     r'quantity': PropertySchema(id: 15, name: r'quantity', type: IsarType.long),
     r'quarantineEndDate': PropertySchema(
@@ -150,7 +150,6 @@ int _creatureEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.mainImage.length * 8;
   {
     final value = object.nickname;
     if (value != null) {
@@ -163,7 +162,6 @@ int _creatureEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
-  bytesCount += 3 + object.purchaseScreenshot.length * 8;
   {
     final value = object.source;
     if (value != null) {
@@ -201,13 +199,13 @@ void _creatureSerialize(
   writer.writeDateTime(offsets[5], object.entryDate);
   writer.writeBool(offsets[6], object.isArchived);
   writer.writeBool(offsets[7], object.isFavorite);
-  writer.writeLongList(offsets[8], object.mainImage);
+  writer.writeLong(offsets[8], object.mainImageId);
   writer.writeString(offsets[9], object.nickname);
   writer.writeString(offsets[10], object.notes);
   writer.writeDouble(offsets[11], object.packagingCost);
   writer.writeDouble(offsets[12], object.price);
   writer.writeDateTime(offsets[13], object.purchaseDate);
-  writer.writeLongList(offsets[14], object.purchaseScreenshot);
+  writer.writeLong(offsets[14], object.purchaseScreenshotId);
   writer.writeLong(offsets[15], object.quantity);
   writer.writeDateTime(offsets[16], object.quarantineEndDate);
   writer.writeDouble(offsets[17], object.shippingCost);
@@ -246,13 +244,13 @@ Creature _creatureDeserialize(
     entryDate: reader.readDateTimeOrNull(offsets[5]),
     isArchived: reader.readBoolOrNull(offsets[6]) ?? false,
     isFavorite: reader.readBoolOrNull(offsets[7]) ?? false,
-    mainImage: reader.readLongList(offsets[8]) ?? const [],
+    mainImageId: reader.readLongOrNull(offsets[8]),
     nickname: reader.readStringOrNull(offsets[9]),
     notes: reader.readStringOrNull(offsets[10]),
     packagingCost: reader.readDoubleOrNull(offsets[11]),
     price: reader.readDoubleOrNull(offsets[12]),
     purchaseDate: reader.readDateTimeOrNull(offsets[13]),
-    purchaseScreenshot: reader.readLongList(offsets[14]) ?? const [],
+    purchaseScreenshotId: reader.readLongOrNull(offsets[14]),
     quantity: reader.readLongOrNull(offsets[15]) ?? 1,
     quarantineEndDate: reader.readDateTimeOrNull(offsets[16]),
     shippingCost: reader.readDoubleOrNull(offsets[17]),
@@ -304,7 +302,7 @@ P _creatureDeserializeProp<P>(
     case 7:
       return (reader.readBoolOrNull(offset) ?? false) as P;
     case 8:
-      return (reader.readLongList(offset) ?? const []) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 9:
       return (reader.readStringOrNull(offset)) as P;
     case 10:
@@ -316,7 +314,7 @@ P _creatureDeserializeProp<P>(
     case 13:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 14:
-      return (reader.readLongList(offset) ?? const []) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 15:
       return (reader.readLongOrNull(offset) ?? 1) as P;
     case 16:
@@ -968,109 +966,76 @@ extension CreatureQueryFilter
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageElementEqualTo(int value) {
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'mainImage', value: value),
+        const FilterCondition.isNull(property: r'mainImageId'),
       );
     });
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageElementGreaterThan(int value, {bool include = false}) {
+  mainImageIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'mainImageId'),
+      );
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdEqualTo(
+    int? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'mainImageId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterFilterCondition>
+  mainImageIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'mainImage',
+          property: r'mainImageId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageElementLessThan(int value, {bool include = false}) {
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'mainImage',
+          property: r'mainImageId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageElementBetween(
-    int lower,
-    int upper, {
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdBetween(
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'mainImage',
+          property: r'mainImageId',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
         ),
-      );
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'mainImage', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'mainImage', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'mainImage', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageLengthLessThan(int length, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'mainImage', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageLengthGreaterThan(int length, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'mainImage', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'mainImage',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
       );
     });
   }
@@ -1657,21 +1622,42 @@ extension CreatureQueryFilter
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotElementEqualTo(int value) {
+  purchaseScreenshotIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'purchaseScreenshot', value: value),
+        const FilterCondition.isNull(property: r'purchaseScreenshotId'),
       );
     });
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotElementGreaterThan(int value, {bool include = false}) {
+  purchaseScreenshotIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'purchaseScreenshotId'),
+      );
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterFilterCondition>
+  purchaseScreenshotIdEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'purchaseScreenshotId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterFilterCondition>
+  purchaseScreenshotIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'purchaseScreenshot',
+          property: r'purchaseScreenshotId',
           value: value,
         ),
       );
@@ -1679,12 +1665,12 @@ extension CreatureQueryFilter
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotElementLessThan(int value, {bool include = false}) {
+  purchaseScreenshotIdLessThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'purchaseScreenshot',
+          property: r'purchaseScreenshotId',
           value: value,
         ),
       );
@@ -1692,86 +1678,21 @@ extension CreatureQueryFilter
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotElementBetween(
-    int lower,
-    int upper, {
+  purchaseScreenshotIdBetween(
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'purchaseScreenshot',
+          property: r'purchaseScreenshotId',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
           includeUpper: includeUpper,
         ),
-      );
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'purchaseScreenshot',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'purchaseScreenshot', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'purchaseScreenshot', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotLengthLessThan(int length, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(r'purchaseScreenshot', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotLengthGreaterThan(int length, {bool include = false}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'purchaseScreenshot',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  purchaseScreenshotLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'purchaseScreenshot',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
       );
     });
   }
@@ -3080,6 +3001,18 @@ extension CreatureQuerySortBy on QueryBuilder<Creature, Creature, QSortBy> {
     });
   }
 
+  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainImageId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mainImageId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainImageIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mainImageId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Creature, Creature, QAfterSortBy> sortByNickname() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nickname', Sort.asc);
@@ -3137,6 +3070,19 @@ extension CreatureQuerySortBy on QueryBuilder<Creature, Creature, QSortBy> {
   QueryBuilder<Creature, Creature, QAfterSortBy> sortByPurchaseDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'purchaseDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy> sortByPurchaseScreenshotId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseScreenshotId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy>
+  sortByPurchaseScreenshotIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseScreenshotId', Sort.desc);
     });
   }
 
@@ -3372,6 +3318,18 @@ extension CreatureQuerySortThenBy
     });
   }
 
+  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainImageId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mainImageId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainImageIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'mainImageId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Creature, Creature, QAfterSortBy> thenByNickname() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'nickname', Sort.asc);
@@ -3429,6 +3387,19 @@ extension CreatureQuerySortThenBy
   QueryBuilder<Creature, Creature, QAfterSortBy> thenByPurchaseDateDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'purchaseDate', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy> thenByPurchaseScreenshotId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseScreenshotId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Creature, Creature, QAfterSortBy>
+  thenByPurchaseScreenshotIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'purchaseScreenshotId', Sort.desc);
     });
   }
 
@@ -3603,9 +3574,9 @@ extension CreatureQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Creature, Creature, QDistinct> distinctByMainImage() {
+  QueryBuilder<Creature, Creature, QDistinct> distinctByMainImageId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'mainImage');
+      return query.addDistinctBy(r'mainImageId');
     });
   }
 
@@ -3643,9 +3614,9 @@ extension CreatureQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Creature, Creature, QDistinct> distinctByPurchaseScreenshot() {
+  QueryBuilder<Creature, Creature, QDistinct> distinctByPurchaseScreenshotId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'purchaseScreenshot');
+      return query.addDistinctBy(r'purchaseScreenshotId');
     });
   }
 
@@ -3781,9 +3752,9 @@ extension CreatureQueryProperty
     });
   }
 
-  QueryBuilder<Creature, List<int>, QQueryOperations> mainImageProperty() {
+  QueryBuilder<Creature, int?, QQueryOperations> mainImageIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'mainImage');
+      return query.addPropertyName(r'mainImageId');
     });
   }
 
@@ -3817,10 +3788,10 @@ extension CreatureQueryProperty
     });
   }
 
-  QueryBuilder<Creature, List<int>, QQueryOperations>
-  purchaseScreenshotProperty() {
+  QueryBuilder<Creature, int?, QQueryOperations>
+  purchaseScreenshotIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'purchaseScreenshot');
+      return query.addPropertyName(r'purchaseScreenshotId');
     });
   }
 

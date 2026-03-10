@@ -120,7 +120,7 @@ CreatureStatusChange _creatureStatusChangeDeserialize(
         _CreatureStatusChangepreviousStatusValueEnumMap[reader.readByteOrNull(
           offsets[6],
         )] ??
-        CreatureStatus.ordered,
+        CreatureStatus.alive,
   );
   object.id = id;
   return object;
@@ -152,7 +152,7 @@ P _creatureStatusChangeDeserializeProp<P>(
     case 6:
       return (_CreatureStatusChangepreviousStatusValueEnumMap[reader
                   .readByteOrNull(offset)] ??
-              CreatureStatus.ordered)
+              CreatureStatus.alive)
           as P;
     default:
       throw IsarError('Unknown property with id $propertyId');

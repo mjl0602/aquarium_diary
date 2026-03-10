@@ -1,168 +1,192 @@
+以下是新增图片表后的完整数据表结构文档：
+
+---
+
 ## 数据表结构文档
 
 ### 1. 鱼缸表 (Aquarium)
 
-| 字段名         | 数据类型 | 必填 | 说明                                     |
-| :------------- | :------- | :--: | :--------------------------------------- |
-| id             | Integer  |  ✅  | 主键，自增                               |
-| name           | String   |  ✅  | 鱼缸名称                                 |
-| structure      | Enum     |  ✅  | 鱼缸结构：底滤/背滤/上滤/外挂缸/DIY/裸缸 |
-| purchase_date  | DateTime |  ❌  | 购买时间                                 |
-| length_mm      | Integer  |  ❌  | 主缸长度（毫米）                         |
-| width_mm       | Integer  |  ❌  | 主缸宽度（毫米）                         |
-| height_mm      | Integer  |  ❌  | 主缸高度（毫米）                         |
-| capacity_liter | Double   |  ❌  | 水体容量（升）                           |
-| is_active      | Boolean  |  ✅  | 是否启用，默认true                       |
-| created_at     | DateTime |  ✅  | 创建时间                                 |
-| notes          | String   |  ❌  | 备注                                     |
+| 字段名        | 数据类型 | 必填 | 说明                                     |
+| :------------ | :------- | :--: | :--------------------------------------- |
+| id            | Integer  |  ✅  | 主键，自增                               |
+| name          | String   |  ✅  | 鱼缸名称                                 |
+| structure     | Enum     |  ✅  | 鱼缸结构：底滤/背滤/上滤/外挂缸/DIY/裸缸 |
+| purchaseDate  | DateTime |  ❌  | 购买时间                                 |
+| lengthMm      | Integer  |  ❌  | 主缸长度（毫米）                         |
+| widthMm       | Integer  |  ❌  | 主缸宽度（毫米）                         |
+| heightMm      | Integer  |  ❌  | 主缸高度（毫米）                         |
+| capacityLiter | Double   |  ❌  | 水体容量（升）                           |
+| isActive      | Boolean  |  ✅  | 是否启用，默认true                       |
+| createdAt     | DateTime |  ✅  | 创建时间                                 |
+| notes         | String   |  ❌  | 备注                                     |
 
 ---
 
 ### 2. 耗材表 (Consumable)
 
-| 字段名         | 数据类型 | 必填 | 说明                               |
-| :------------- | :------- | :--: | :--------------------------------- |
-| id             | Integer  |  ✅  | 主键，自增                         |
-| aquarium_id    | Integer  |  ❌  | 关联鱼缸ID（可为空表示通用）       |
-| name           | String   |  ✅  | 耗材名称                           |
-| type           | Enum     |  ✅  | 耗材类型：鱼粮/滤棉/试剂/海盐/其他 |
-| capacity       | Double   |  ❌  | 耗材容量（如500g、1000ml等）       |
-| unit           | String   |  ❌  | 单位（g/ml/片/包等）               |
-| price          | Double   |  ❌  | 购买价格                           |
-| purchase_date  | DateTime |  ❌  | 购买时间                           |
-| estimated_uses | Integer  |  ❌  | 预计使用次数                       |
-| estimated_days | Integer  |  ❌  | 预计使用天数                       |
-| used_count     | Integer  |  ✅  | 已使用次数，默认0                  |
-| used_date      | DateTime |  ❌  | 开始使用日期                       |
-| is_empty       | Boolean  |  ✅  | 是否已用完，默认false              |
-| created_at     | DateTime |  ✅  | 创建时间                           |
-| notes          | String   |  ❌  | 备注                               |
+| 字段名        | 数据类型 | 必填 | 说明                               |
+| :------------ | :------- | :--: | :--------------------------------- |
+| id            | Integer  |  ✅  | 主键，自增                         |
+| aquariumId    | Integer  |  ❌  | 关联鱼缸ID（可为空表示通用）       |
+| name          | String   |  ✅  | 耗材名称                           |
+| type          | Enum     |  ✅  | 耗材类型：鱼粮/滤棉/试剂/海盐/其他 |
+| capacity      | Double   |  ❌  | 耗材容量（如500g、1000ml等）       |
+| unit          | String   |  ❌  | 单位（g/ml/片/包等）               |
+| price         | Double   |  ❌  | 购买价格                           |
+| purchaseDate  | DateTime |  ❌  | 购买时间                           |
+| estimatedUses | Integer  |  ❌  | 预计使用次数                       |
+| estimatedDays | Integer  |  ❌  | 预计使用天数                       |
+| usedCount     | Integer  |  ✅  | 已使用次数，默认0                  |
+| usedDate      | DateTime |  ❌  | 开始使用日期                       |
+| isEmpty       | Boolean  |  ✅  | 是否已用完，默认false              |
+| createdAt     | DateTime |  ✅  | 创建时间                           |
+| notes         | String   |  ❌  | 备注                               |
 
 ---
 
 ### 3. 设备表 (Equipment)
 
-| 字段名        | 数据类型     | 必填 | 说明                                    |
-| :------------ | :----------- | :--: | :-------------------------------------- |
-| id            | Integer      |  ✅  | 主键，自增                              |
-| aquarium_id   | Integer      |  ❌  | 关联鱼缸ID                              |
-| name          | String       |  ✅  | 设备名称                                |
-| price         | Double       |  ❌  | 购买价格                                |
-| power_watt    | Double       |  ❌  | 功率（瓦）                              |
-| status        | Enum         |  ✅  | 状态：计划购买/正常使用/已出二手/已废弃 |
-| start_date    | DateTime     |  ❌  | 开始使用日期                            |
-| socket_count  | Integer      |  ❌  | 占用插座数量                            |
-| socket_info   | String       |  ❌  | 插座位置描述（如"排插1-3"）             |
-| tags          | List<String> |  ❌  | 标签列表                                |
-| purchase_date | DateTime     |  ❌  | 购买日期                                |
-| warranty_date | DateTime     |  ❌  | 保修到期日                              |
-| created_at    | DateTime     |  ✅  | 创建时间                                |
-| notes         | String       |  ❌  | 备注                                    |
+| 字段名       | 数据类型     | 必填 | 说明                                    |
+| :----------- | :----------- | :--: | :-------------------------------------- |
+| id           | Integer      |  ✅  | 主键，自增                              |
+| aquariumId   | Integer      |  ❌  | 关联鱼缸ID                              |
+| name         | String       |  ✅  | 设备名称                                |
+| price        | Double       |  ❌  | 购买价格                                |
+| powerWatt    | Double       |  ❌  | 功率（瓦）                              |
+| status       | Enum         |  ✅  | 状态：计划购买/正常使用/已出二手/已废弃 |
+| startDate    | DateTime     |  ❌  | 开始使用日期                            |
+| socketCount  | Integer      |  ❌  | 占用插座数量                            |
+| socketInfo   | String       |  ❌  | 插座位置描述（如"排插1-3"）             |
+| tags         | List<String> |  ❌  | 标签列表                                |
+| purchaseDate | DateTime     |  ❌  | 购买日期                                |
+| warrantyDate | DateTime     |  ❌  | 保修到期日                              |
+| createdAt    | DateTime     |  ✅  | 创建时间                                |
+| notes        | String       |  ❌  | 备注                                    |
 
 ---
 
 ### 4. 生物表 (Creature)
 
-| 字段名              | 数据类型     | 必填 | 说明                                                               |
-| :------------------ | :----------- | :--: | :----------------------------------------------------------------- |
-| id                  | Integer      |  ✅  | 主键，自增                                                         |
-| aquarium_id         | Integer      |  ❌  | 关联鱼缸ID                                                         |
-| category            | Enum         |  ✅  | 分类：鱼/珊瑚/虾蟹/水藻/螺/贝类/海葵/海星/海胆/海参/海兔/管虫/其他 |
-| species_name        | String       |  ✅  | 物种名（品种名）                                                   |
-| nickname            | String       |  ❌  | 昵称                                                               |
-| quantity            | Integer      |  ✅  | 数量，默认1                                                        |
-| size_cm             | Double       |  ❌  | 尺寸（厘米）                                                       |
-| aggressiveness      | Enum         |  ❌  | 攻击性：温和/中等/凶猛/极凶                                        |
-| coral_compatibility | Enum         |  ❌  | 珊瑚兼容性：安全/谨慎/危险                                         |
-| main_image          | Binary       |  ❌  | 主图二进制数据（Blob）                                             |
-| images              | List<Binary> |  ❌  | 多张图片二进制数据                                                 |
-| entry_date          | DateTime     |  ❌  | 入缸时间                                                           |
-| quarantine_end_date | DateTime     |  ❌  | 检疫到期时间                                                       |
-| status_type         | Enum         |  ✅  | 状态类型：下单/正常存活/状态差/死亡/失踪/出售/赠送                 |
-| status_note         | String       |  ❌  | 状态备注文字                                                       |
-| is_favorite         | Boolean      |  ✅  | 是否收藏，默认false                                                |
-| source              | String       |  ❌  | 来源商家                                                           |
-| purchase_date       | DateTime     |  ❌  | 购买日期                                                           |
-| purchase_screenshot | Binary       |  ❌  | 购买截图二进制数据                                                 |
-| price               | Double       |  ❌  | 购买价格                                                           |
-| shipping_cost       | Double       |  ❌  | 运费                                                               |
-| packaging_cost      | Double       |  ❌  | 包装费                                                             |
-| total_cost          | Double       |  ❌  | 总成本（计算字段）                                                 |
-| tags                | List<String> |  ❌  | 标签列表                                                           |
-| is_archived         | Boolean      |  ✅  | 是否已归档，默认false                                              |
-| created_at          | DateTime     |  ✅  | 创建时间                                                           |
-| updated_at          | DateTime     |  ✅  | 更新时间                                                           |
-| notes               | String       |  ❌  | 备注                                                               |
+| 字段名               | 数据类型     | 必填 | 说明                                                               |
+| :------------------- | :----------- | :--: | :----------------------------------------------------------------- |
+| id                   | Integer      |  ✅  | 主键，自增                                                         |
+| aquariumId           | Integer      |  ❌  | 关联鱼缸ID                                                         |
+| category             | Enum         |  ✅  | 分类：鱼/珊瑚/虾蟹/水藻/螺/贝类/海葵/海星/海胆/海参/海兔/管虫/其他 |
+| speciesName          | String       |  ✅  | 物种名（品种名）                                                   |
+| nickname             | String       |  ❌  | 昵称                                                               |
+| quantity             | Integer      |  ✅  | 数量，默认1                                                        |
+| sizeCm               | Double       |  ❌  | 尺寸（厘米）                                                       |
+| aggressiveness       | Enum         |  ✅  | 攻击性：温和/中等/凶猛/极凶，默认温和                              |
+| coralCompatibility   | Enum         |  ❌  | 珊瑚兼容性：安全/谨慎/危险                                         |
+| mainImageId          | Integer      |  ❌  | 关联图片表ID（主图）                                               |
+| entryDate            | DateTime     |  ❌  | 入缸时间                                                           |
+| quarantineEndDate    | DateTime     |  ❌  | 检疫到期时间                                                       |
+| statusType           | Enum         |  ✅  | 状态类型：下单/正常存活/状态差/死亡/失踪/出售/赠送                 |
+| statusNote           | String       |  ❌  | 状态备注文字                                                       |
+| isFavorite           | Boolean      |  ✅  | 是否收藏，默认false                                                |
+| source               | String       |  ❌  | 来源商家                                                           |
+| purchaseDate         | DateTime     |  ❌  | 购买日期                                                           |
+| purchaseScreenshotId | Integer      |  ❌  | 关联图片表ID（购买截图）                                           |
+| price                | Double       |  ❌  | 购买价格                                                           |
+| shippingCost         | Double       |  ❌  | 运费                                                               |
+| packagingCost        | Double       |  ❌  | 包装费                                                             |
+| totalCost            | Double       |  ❌  | 总成本（计算字段：price+shippingCost+packagingCost）               |
+| tags                 | List<String> |  ❌  | 标签列表                                                           |
+| isArchived           | Boolean      |  ✅  | 是否已归档，默认false                                              |
+| createdAt            | DateTime     |  ✅  | 创建时间                                                           |
+| updatedAt            | DateTime     |  ✅  | 更新时间                                                           |
+| notes                | String       |  ❌  | 备注                                                               |
 
 ---
 
 ### 5. 生物状态变化表 (CreatureStatusChange)
 
-| 字段名          | 数据类型 | 必填 | 说明         |
-| :-------------- | :------- | :--: | :----------- |
-| id              | Integer  |  ✅  | 主键，自增   |
-| creature_id     | Integer  |  ✅  | 关联生物ID   |
-| previous_status | Enum     |  ❌  | 变化前状态   |
-| new_status      | Enum     |  ✅  | 变化后状态   |
-| description     | String   |  ✅  | 状态变化描述 |
-| change_date     | DateTime |  ✅  | 变化时间     |
-| notes           | String   |  ❌  | 备注         |
-| created_at      | DateTime |  ✅  | 创建时间     |
+| 字段名         | 数据类型 | 必填 | 说明                     |
+| :------------- | :------- | :--: | :----------------------- |
+| id             | Integer  |  ✅  | 主键，自增               |
+| creatureId     | Integer  |  ✅  | 关联生物ID               |
+| previousStatus | Enum     |  ✅  | 变化前状态，默认正常存活 |
+| newStatus      | Enum     |  ✅  | 变化后状态               |
+| description    | String   |  ✅  | 状态变化描述             |
+| changeDate     | DateTime |  ✅  | 变化时间                 |
+| notes          | String   |  ❌  | 备注                     |
+| createdAt      | DateTime |  ✅  | 创建时间                 |
 
 ---
 
 ### 6. 维护记录表 (MaintenanceRecord)
 
-| 字段名             | 数据类型     | 必填 | 说明                                                               |
-| :----------------- | :----------- | :--: | :----------------------------------------------------------------- |
-| id                 | Integer      |  ✅  | 主键，自增                                                         |
-| aquarium_id        | Integer      |  ✅  | 关联鱼缸ID                                                         |
-| operation          | Enum         |  ✅  | 操作类型：开缸/暴藻/喂食/刮藻/换水/换棉/更换设备/测试水质/更换耗材 |
-| consumable_id      | Integer      |  ❌  | 关联耗材ID（如适用）                                               |
-| consumable_amount  | Double       |  ❌  | 消耗耗材数量                                                       |
-| operation_date     | DateTime     |  ✅  | 操作时间                                                           |
-| images             | List<Binary> |  ❌  | 相关图片二进制数据                                                 |
-| next_reminder_date | DateTime     |  ❌  | 下次提醒时间                                                       |
-| is_reminded        | Boolean      |  ✅  | 是否已提醒，默认false                                              |
-| created_at         | DateTime     |  ✅  | 创建时间                                                           |
-| notes              | String       |  ❌  | 备注                                                               |
+| 字段名           | 数据类型 | 必填 | 说明                                                               |
+| :--------------- | :------- | :--: | :----------------------------------------------------------------- |
+| id               | Integer  |  ✅  | 主键，自增                                                         |
+| aquariumId       | Integer  |  ✅  | 关联鱼缸ID                                                         |
+| operation        | Enum     |  ✅  | 操作类型：开缸/暴藻/喂食/刮藻/换水/换棉/更换设备/测试水质/更换耗材 |
+| consumableId     | Integer  |  ❌  | 关联耗材ID（如适用）                                               |
+| consumableAmount | Double   |  ❌  | 消耗耗材数量                                                       |
+| operationDate    | DateTime |  ✅  | 操作时间                                                           |
+| nextReminderDate | DateTime |  ❌  | 下次提醒时间                                                       |
+| isReminded       | Boolean  |  ✅  | 是否已提醒，默认false                                              |
+| createdAt        | DateTime |  ✅  | 创建时间                                                           |
+| notes            | String   |  ❌  | 备注                                                               |
 
 ---
 
-## 周期计划表 (SchedulePlan)
+### 7. 周期计划表 (SchedulePlan)
 
-| 字段名                     | 数据类型  | 必填 | 说明                                                 |
-| :------------------------- | :-------- | :--: | :--------------------------------------------------- |
-| id                         | Integer   |  ✅  | 主键，自增                                           |
-| aquarium_id                | Integer   |  ❌  | 关联鱼缸ID（为空表示通用计划）                       |
-| name                       | String    |  ✅  | 计划名称（如"每周换水"、"每月测试"）                 |
-| operation                  | Enum      |  ✅  | 操作类型：换水/测试水质/喂食/刮藻/换棉/更换耗材/其他 |
-| cycle_type                 | Enum      |  ✅  | 周期类型：每天/每周/每月/每年/自定义天数             |
-| cycle_days                 | Integer   |  ❌  | 自定义周期天数（cycle_type为custom时必填）           |
-| reminder_time              | TimeOfDay |  ❌  | 提醒时间（如09:00）                                  |
-| advance_reminder_minutes   | Integer   |  ✅  | 提前提醒分钟数，默认0                                |
-| is_enabled                 | Boolean   |  ✅  | 是否启用，默认true                                   |
-| last_execute_date          | DateTime  |  ❌  | 上次执行日期                                         |
-| next_execute_date          | DateTime  |  ❌  | 下次计划执行日期（自动计算）                         |
-| consumable_id              | Integer   |  ❌  | 关联耗材ID（如换水关联海盐）                         |
-| last_maintenance_id        | Integer   |  ❌  | 关联维护记录ID，完成计划后填入数据                   |
-| estimated_duration_minutes | Integer   |  ❌  | 预计耗时（分钟）                                     |
-| created_at                 | DateTime  |  ✅  | 创建时间                                             |
-| notes                      | String    |  ❌  | 备注                                                 |
+| 字段名                   | 数据类型 | 必填 | 说明                                                 |
+| :----------------------- | :------- | :--: | :--------------------------------------------------- |
+| id                       | Integer  |  ✅  | 主键，自增                                           |
+| aquariumId               | Integer  |  ❌  | 关联鱼缸ID（为空表示通用计划）                       |
+| name                     | String   |  ✅  | 计划名称（如"每周换水"、"每月测试"）                 |
+| operation                | Enum     |  ✅  | 操作类型：换水/测试水质/喂食/刮藻/换棉/更换耗材/其他 |
+| cycleType                | Enum     |  ✅  | 周期类型：每天/每周/每月/每年/自定义天数             |
+| cycleDays                | Integer  |  ❌  | 自定义周期天数（cycleType为custom时必填）            |
+| reminderTime             | String   |  ❌  | 提醒时间（如"09:00"）                                |
+| advanceReminderMinutes   | Integer  |  ✅  | 提前提醒分钟数，默认0                                |
+| isEnabled                | Boolean  |  ✅  | 是否启用，默认true                                   |
+| lastExecuteDate          | DateTime |  ❌  | 上次执行日期                                         |
+| nextExecuteDate          | DateTime |  ❌  | 下次计划执行日期（自动计算）                         |
+| consumableId             | Integer  |  ❌  | 关联耗材ID（如换水关联海盐）                         |
+| lastMaintenanceId        | Integer  |  ❌  | 关联维护记录ID，完成计划后填入数据                   |
+| estimatedDurationMinutes | Integer  |  ❌  | 预计耗时（分钟）                                     |
+| createdAt                | DateTime |  ✅  | 创建时间                                             |
+| notes                    | String   |  ❌  | 备注                                                 |
+
+---
+
+### 8. 图片表 (Image) 
+
+| 字段名      | 数据类型 | 必填 | 说明                                            |
+| :---------- | :------- | :--: | :---------------------------------------------- |
+| id          | Integer  |  ✅  | 主键，自增                                      |
+| refType     | Enum     |  ✅  | 关联对象类型：鱼缸/生物/维护记录/设备/耗材/其他 |
+| refId       | Integer  |  ✅  | 关联对象ID                                      |
+| filePath    | String   |  ✅  | 图片本地存储路径                                |
+| fileName    | String   |  ❌  | 原始文件名                                      |
+| fileSize    | Integer  |  ❌  | 文件大小（字节）                                |
+| mimeType    | String   |  ❌  | MIME类型（如image/jpeg）                        |
+| width       | Integer  |  ❌  | 图片宽度（像素）                                |
+| height      | Integer  |  ❌  | 图片高度（像素）                                |
+| isPrimary   | Boolean  |  ✅  | 是否主图/封面，默认false                        |
+| sortOrder   | Integer  |  ✅  | 排序顺序，默认0                                 |
+| description | String   |  ❌  | 图片描述/备注                                   |
+| takenAt     | DateTime |  ❌  | 拍摄时间                                        |
+| createdAt   | DateTime |  ✅  | 创建时间                                        |
 
 ---
 
 ## 枚举值定义
 
-| 枚举名         | 可选值                                                                                                                                                                                         |
-| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **鱼缸结构**   | bottomFilter(底滤), backFilter(背滤), topFilter(上滤), hangOn(外挂缸), diy(DIY), bare(裸缸)                                                                                                    |
-| **耗材类型**   | fishFood(鱼粮), filterCotton(滤棉), reagent(试剂), seaSalt(海盐), other(其他)                                                                                                                  |
-| **设备状态**   | planned(计划购买), active(正常使用), sold(已出二手), discarded(已废弃)                                                                                                                         |
-| **生物分类**   | fish(鱼), coral(珊瑚), shrimp(虾蟹), algae(水藻), snail(螺), clam(贝类), anemone(海葵), starfish(海星), urchin(海胆), seaCucumber(海参), nudibranch(海兔), tubeWorm(管虫), other(其他)         |
-| **生物状态**   | ordered(下单), alive(正常存活), weak(状态差), dead(死亡), missing(失踪), sold(出售), gifted(赠送)                                                                                              |
-| **攻击性**     | peaceful(温和), moderate(中等), aggressive(凶猛), veryAggressive(极凶)                                                                                                                         |
-| **珊瑚兼容性** | safe(安全), caution(谨慎), dangerous(危险)                                                                                                                                                     |
-| **维护操作**   | setup(开缸), algaeBloom(暴藻), feeding(喂食), algaeClean(刮藻), waterChange(换水), cottonChange(换棉), equipmentChange(更换设备), waterTest(测试水质), consumableChange(更换耗材)              |
-| **周期类型**   | **daily(每天)**, **weekly(每周)**, **monthly(每月)**, **yearly(每年)**, **custom(自定义)**                                                                                                     |
-| **计划操作**   | **waterChange(换水)**, **waterTest(测试水质)**, **feeding(喂食)**, **algaeClean(刮藻)**, **cottonChange(换棉)**, **consumableChange(更换耗材)**, **equipmentCheck(设备检查)**, **other(其他)** |
+| 枚举名           | 可选值                                                                                                                                                                                 |
+| :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **鱼缸结构**     | bottomFilter(底滤), backFilter(背滤), topFilter(上滤), hangOn(外挂缸), diy(DIY), bare(裸缸)                                                                                            |
+| **耗材类型**     | fishFood(鱼粮), filterCotton(滤棉), reagent(试剂), seaSalt(海盐), other(其他)                                                                                                          |
+| **设备状态**     | planned(计划购买), active(正常使用), sold(已出二手), discarded(已废弃)                                                                                                                 |
+| **生物分类**     | fish(鱼), coral(珊瑚), shrimp(虾蟹), algae(水藻), snail(螺), clam(贝类), anemone(海葵), starfish(海星), urchin(海胆), seaCucumber(海参), nudibranch(海兔), tubeWorm(管虫), other(其他) |
+| **生物状态**     | ordered(下单), alive(正常存活), weak(状态差), dead(死亡), missing(失踪), sold(出售), gifted(赠送)                                                                                      |
+| **攻击性**       | peaceful(温和), moderate(中等), aggressive(凶猛), veryAggressive(极凶)                                                                                                                 |
+| **珊瑚兼容性**   | safe(安全), caution(谨慎), dangerous(危险)                                                                                                                                             |
+| **维护操作**     | setup(开缸), algaeBloom(暴藻), feeding(喂食), algaeClean(刮藻), waterChange(换水), cottonChange(换棉), equipmentChange(更换设备), waterTest(测试水质), consumableChange(更换耗材)      |
+| **周期类型**     | daily(每天), weekly(每周), monthly(每月), yearly(每年), custom(自定义)                                                                                                                 |
+| **计划操作**     | waterChange(换水), waterTest(测试水质), feeding(喂食), algaeClean(刮藻), cottonChange(换棉), consumableChange(更换耗材), equipmentCheck(设备检查), other(其他)                         |
+| **图片关联类型** | aquarium(鱼缸), creature(生物), maintenance(维护记录), equipment(设备), consumable(耗材), other(其他)                                                                                  |

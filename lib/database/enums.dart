@@ -217,3 +217,25 @@ enum ScheduleOperation {
     }
   }
 }
+
+
+/// 图片关联类型
+enum ImageRefType {
+  aquarium,       // 鱼缸
+  creature,       // 生物
+  maintenance,    // 维护记录
+  equipment,      // 设备
+  consumable,     // 耗材
+  other;          // 其他
+
+  String get label {
+    switch (this) {
+      case ImageRefType.aquarium: return '鱼缸';
+      case ImageRefType.creature: return '生物';
+      case ImageRefType.maintenance: return '维护记录';
+      case ImageRefType.equipment: return '设备';
+      case ImageRefType.consumable: return '耗材';
+      case ImageRefType.other: return '其他';
+    }
+  }
+}

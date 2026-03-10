@@ -27,13 +27,40 @@ class CreatureStatusChange {
 
   CreatureStatusChange({
     required this.creatureId,
-    required this.previousStatus,
+    this.previousStatus = CreatureStatus.alive,
     required this.newStatus,
     required this.description,
     required this.changeDate,
     this.notes,
     required this.createdAt,
   });
+
+  factory CreatureStatusChange.fromJson(Map<String, dynamic> json) {
+    return CreatureStatusChange(
+      creatureId: json['creatureId'] as int,
+      previousStatus: CreatureStatus.values.byName(
+        json['previousStatus'] as String? ?? 'alive',
+      ),
+      newStatus: CreatureStatus.values.byName(json['newStatus'] as String),
+      description: json['description'] as String,
+      changeDate: DateTime.parse(json['changeDate'] as String),
+      notes: json['notes'] as String?,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    )..id = json['id'] as int? ?? Isar.autoIncrement;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'creatureId': creatureId,
+      'previousStatus': previousStatus.name,
+      'newStatus': newStatus.name,
+      'description': description,
+      'changeDate': changeDate.toIso8601String(),
+      'notes': notes,
+      'createdAt': createdAt.toIso8601String(),
+    };
+  }
 
   @override
   String toString() {
