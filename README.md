@@ -1,6 +1,6 @@
-# aquarium_diary
+# 鱼缸日记
 
-A new Flutter project.
+鱼缸日记是完全开源的养鱼记录APP，数据均保存在本地。
 
 ## Getting Started
 

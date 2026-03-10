@@ -281,9 +281,6 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
                     height: 52,
                     decoration: BoxDecoration(
                       color: StColor.primary,
-                      // gradient: LinearGradient(
-                      //   colors: StColor.gradientDeepOcean,
-                      // ),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
