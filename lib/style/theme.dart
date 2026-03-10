@@ -10,6 +10,7 @@ import 'color.dart';
 
 ThemeData buildOceanTheme() {
   return ThemeData(
+    useMaterial3: false,
     // 主色调
     primaryColor: StColor.deepBlue,
     primaryColorLight: StColor.oceanBlue,
@@ -18,7 +19,7 @@ ThemeData buildOceanTheme() {
     // 强调色 - 珊瑚色
     colorScheme: ColorScheme.light(
       primary: StColor.deepBlue,
-      secondary: StColor.coral,
+      secondary: const Color.fromARGB(255, 137, 120, 120),
       surface: StColor.white,
       background: StColor.lightGray,
       error: StColor.error,
