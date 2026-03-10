@@ -104,7 +104,7 @@ Future<String?> inputText(
             ),
           Container(
             decoration: BoxDecoration(
-              color: ColorPlate.lightGray,
+              color: StColor.lightGray,
               borderRadius: BorderRadius.circular(6),
             ),
             child: StInput.helper(
@@ -221,15 +221,15 @@ class _ConfirmDialog extends StatelessWidget {
     switch (type) {
       case ConfirmType.danger:
         iconData = Icons.info;
-        color = ColorPlate.error;
+        color = StColor.error;
         break;
       case ConfirmType.info:
         iconData = Icons.info;
-        color = ColorPlate.primary;
+        color = StColor.primary;
         break;
       case ConfirmType.success:
         iconData = Icons.info_outline;
-        color = ColorPlate.primary;
+        color = StColor.primary;
         break;
       case ConfirmType.warning:
         iconData = Icons.warning;
@@ -348,7 +348,7 @@ class _DialogButton extends StatelessWidget {
       );
     } else {
       d = BoxDecoration(
-        color: ColorPlate.lightGray,
+        color: StColor.lightGray,
         borderRadius: BorderRadius.circular(6),
       );
     }
@@ -364,7 +364,7 @@ class _DialogButton extends StatelessWidget {
           title,
           style: TextStyle(
             height: oneLineH,
-            color: pimary ? ColorPlate.white : null,
+            color: pimary ? StColor.white : null,
           ),
         ),
       ),

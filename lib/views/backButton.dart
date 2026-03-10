@@ -19,7 +19,7 @@ class StBackButton extends StatelessWidget {
       },
       child: Container(
         padding: EdgeInsets.only(top: 4),
-        color: ColorPlate.clear,
+        color: StColor.clear,
         child: Arrow(direction: ArrowDirection.left),
       ),
     );

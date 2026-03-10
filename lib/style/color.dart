@@ -1,7 +1,7 @@
 // lib/style/color.dart
 import 'package:flutter/material.dart';
 
-class ColorPlate {
+class StColor {
   //
   // 层次灰色
   //

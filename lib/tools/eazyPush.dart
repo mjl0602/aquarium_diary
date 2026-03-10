@@ -24,7 +24,7 @@ extension EasyPush on Widget {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: ColorPlate.clear,
+      backgroundColor: StColor.clear,
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.75,
       ),
@@ -47,7 +47,7 @@ class BlurDialogRoute<T> extends RawDialogRoute<T> {
   BlurDialogRoute({
     required Widget Function(BuildContext) builder,
   }) : super(
-          barrierColor: ColorPlate.clear,
+          barrierColor: StColor.clear,
           transitionDuration: Duration(milliseconds: 300),
           transitionBuilder: (
             BuildContext context,

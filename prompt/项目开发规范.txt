@@ -1,0 +1,61 @@
+# 项目开发规范
+
+开发flutter项目时请按以下规范进行开发
+
+## 代码风格
+
+UI代码风格：
+
+1. 每个dart文件一般是一个页面，有一个主要的StatefulWidget，剩余的Widget一般都是Stateless的，偶尔需要创建内部临时变量或者动画的除外
+2. 尽量使用StatelessWidget，而不是使用Function创建widget
+3. 颜色必须从StColor中取，地址在"lib/style/color.dart"，专属色可根据每个项目替换
+4. 文字尽量使用StText的API，地址在"lib/style/text.dart"，你不需要实现StText，请直接使用。StText支持small,normal,medium,big,API:const StText.medium(String? text, {Key? key,TextStyle? style,TextAlign? align,int? maxLines,})
+5. 普通页面一般使用Scaffold+Appbar，尽量不使用Material的卡片和阴影风格，尽量使用Container的decoration
+6. 间距尽量使用EdgeInsets.symmetric进行控制，如果一侧的间距不同，补充一个copyOf
+7. 按钮的简单点动效果可以使用 Tapped 参数与GentureDetector完全相同
+8. 如果遇到复杂的表单项目/选择项，可以使用 final res = await xxxxx(context) 进行函数预留，先忽略内部的填写选择逻辑
+
+数据处理
+
+1. 尽量使用原数据+getter的形式管理数据，避免产生脏数据
+2. 使用setState刷新页面
+3. 复杂数据可以抽离为一个继承ChangeNorifier的类，每次变化后通知页面
+4. 不使用任何其他的状态管理框架
+5. 如果需要储存本地数据，你使用isar数据库，每个数据类按实际使用情况，自己提供快捷的增删插改和筛选方法，枚举使用dart的高级枚举，枚举使用数字或者英文key，通过getter获取中文文本。每个数据提供可读性好的toString方法
+6. 可以使用UserDefault.xxx.value保存和读取UserDefault，你不需要实现UserDefault，请直接使用
+7. 可以使用Api.http获取dio示例发送网络请求，你不需要实现Api.http，请直接使用
+
+## 工作顺序
+
+你按以下顺序创建APP
+
+1. 填充StColor，将颜色换成将要使用的颜色
+
+```dart
+class StColor {
+  // 层次灰色
+  static const Color black = Colors.black;
+  static const Color darkGray = const Color(0xff4a4a4a);
+  static const Color gray = const Color(0xff9b9b9b);
+  static const Color halfGray = const Color(0xffcccccc);
+  static const Color lightGray = const Color(0xffFBFAF8);
+  static const Color white = Colors.white;
+  static const Color clear = const Color(0);
+  //
+  // 专属色
+  //
+  static const Color primary = blue;
+
+  static const Color blue = const Color(0xff182D8A);
+  static const Color red = const Color(0xffEA5868);
+  static const Color green = Color(0xff03F293);
+  static const Color orange = const Color(0xffF0B21D);
+  static const Color pink = const Color(0xffF33DEA);
+
+  // 渐变
+  static List<Color> get gradientBg => [Color(0xffEEF8EE), Color(0xffF7FAEA)];
+}
+```
+
+2. 为APP写theme.dart的内容，使用function创建一个ThemeData
+3. 创建页面，从主页开始，逐个创建页面

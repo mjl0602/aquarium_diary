@@ -132,7 +132,7 @@ class BarChartPainter extends CustomPainter {
       var _color =
           barColorBuilder?.call(index, data.value! ~/ 1) ??
           color ??
-          ColorPlate.primary;
+          StColor.primary;
       if (blank) {
         valueHeight1 = 4;
         _color = _color.withOpacity(_color.opacity * 0.2);
@@ -209,7 +209,7 @@ class BarChartPainter extends CustomPainter {
         ..moveTo(padding.left, padding.top)
         ..lineTo(padding.left, padding.top + tableHeight),
       Paint()
-        ..color = ColorPlate.lightGray
+        ..color = StColor.lightGray
         ..strokeWidth = 1
         ..style = PaintingStyle.stroke,
     );
@@ -218,7 +218,7 @@ class BarChartPainter extends CustomPainter {
         ..moveTo(tableWidth + padding.left, padding.top)
         ..lineTo(tableWidth + padding.left, padding.top + tableHeight),
       Paint()
-        ..color = ColorPlate.lightGray
+        ..color = StColor.lightGray
         ..strokeWidth = 1
         ..style = PaintingStyle.stroke,
     );
@@ -260,7 +260,7 @@ class BarChartPainter extends CustomPainter {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: ColorPlate.gray, fontSize: 12),
+        style: TextStyle(color: StColor.gray, fontSize: 12),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
@@ -279,7 +279,7 @@ class BarChartPainter extends CustomPainter {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: color ?? ColorPlate.halfGray, fontSize: 12),
+        style: TextStyle(color: color ?? StColor.halfGray, fontSize: 12),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
@@ -303,7 +303,7 @@ class BarChartPainter extends CustomPainter {
     required List<double> dashPattern,
   }) {
     Paint paint = Paint()
-      ..color = ColorPlate.lightGray
+      ..color = StColor.lightGray
       ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
 

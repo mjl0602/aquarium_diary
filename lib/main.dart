@@ -22,7 +22,7 @@ void main() async {
   runAppWithFConsole(
     OKToast(
       radius: 4,
-      backgroundColor: ColorPlate.black.withOpacity(0.6),
+      backgroundColor: StColor.black.withOpacity(0.6),
       dismissOtherOnShow: true,
       child: MyApp(),
     ),
@@ -82,8 +82,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Injoinic Battery',
-      theme: MyTheme.standard(),
+      title: 'Aquarium Diary',
+      theme: buildOceanTheme(),
       home: HomePage(),
       // home: BleTestPage(),
     );

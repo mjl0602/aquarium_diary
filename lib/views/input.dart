@@ -124,9 +124,9 @@ class _StInputState extends State<StInput> {
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 2),
-                  color: ColorPlate.clear,
+                  color: StColor.clear,
                   padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Icon(Icons.cancel, color: ColorPlate.gray, size: 20),
+                  child: Icon(Icons.cancel, color: StColor.gray, size: 20),
                 ),
               )
             : null,
@@ -135,7 +135,7 @@ class _StInputState extends State<StInput> {
         hintStyle: TextStyle(
           height: oneLineH,
           fontSize: SysSize.normal,
-          color: ColorPlate.gray,
+          color: StColor.gray,
         ),
       ),
     );
@@ -205,7 +205,7 @@ class _StPwInputState extends State<StPwInput> {
             contentPadding:
                 widget.contentPadding ?? EdgeInsets.symmetric(horizontal: 6),
             border: InputBorder.none,
-            hintStyle: TextStyle(fontSize: 16, color: ColorPlate.gray),
+            hintStyle: TextStyle(fontSize: 16, color: StColor.gray),
           ),
         ),
         Tapped(
@@ -215,13 +215,13 @@ class _StPwInputState extends State<StPwInput> {
           child: Container(
             height: 40,
             width: 40,
-            color: ColorPlate.clear,
+            color: StColor.clear,
             child: Center(
               child: Icon(
                 Icons.remove_red_eye,
                 color: showPassword
-                    ? ColorPlate.primary
-                    : ColorPlate.gray.withOpacity(0.5),
+                    ? StColor.primary
+                    : StColor.gray.withOpacity(0.5),
               ),
             ),
           ),
@@ -257,7 +257,7 @@ class StTextField extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
         child: Container(
-          color: ColorPlate.white,
+          color: StColor.white,
           child: TextField(
             focusNode: helper?.focusNode,
             controller: helper?.controller,
@@ -275,7 +275,7 @@ class StTextField extends StatelessWidget {
               hintStyle: TextStyle(
                 height: oneLineH,
                 fontSize: SysSize.normal,
-                color: ColorPlate.gray,
+                color: StColor.gray,
               ),
             ),
           ),

@@ -30,7 +30,7 @@ class BlankListHintView extends StatelessWidget {
                   child: Icon(
                     Icons.list,
                     size: 120,
-                    color: ColorPlate.gray.withOpacity(0.1),
+                    color: StColor.gray.withOpacity(0.1),
                   ),
                 ),
                 StText.small('List is empty'),

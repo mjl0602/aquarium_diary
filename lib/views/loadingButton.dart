@@ -42,11 +42,11 @@ class LoadingButton extends StatelessWidget {
             decoration: ShapeDecoration(
               shape: StadiumBorder(),
               shadows: shadow
-                  ? [BoxShadow(color: ColorPlate.primary.withOpacity(0.1))]
+                  ? [BoxShadow(color: StColor.primary.withOpacity(0.1))]
                   : [],
               color:
                   backgoundColor ??
-                  (primary ? ColorPlate.primary : ColorPlate.lightGray),
+                  (primary ? StColor.primary : StColor.lightGray),
             ),
             child: IndexedStack(
               alignment: Alignment.center,
@@ -58,7 +58,7 @@ class LoadingButton extends StatelessWidget {
                     buttonText,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: primary ? ColorPlate.white : ColorPlate.primary,
+                      color: primary ? StColor.white : StColor.primary,
                     ),
                   ),
                 ),

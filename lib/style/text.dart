@@ -12,7 +12,7 @@ class StandardTextStyle {
     // fontFamily: 'MyraidPro',
     fontWeight: FontWeight.w600,
     fontSize: SysSize.big,
-    color: ColorPlate.black,
+    color: StColor.black,
     inherit: true,
     height: 1.4,
   );
@@ -20,7 +20,7 @@ class StandardTextStyle {
     // fontFamily: 'MyraidPro',
     fontWeight: FontWeight.w600,
     fontSize: SysSize.normal,
-    color: ColorPlate.black,
+    color: StColor.black,
     inherit: true,
     height: 1.4,
   );
@@ -28,7 +28,7 @@ class StandardTextStyle {
     // fontFamily: 'MyraidPro',
     fontWeight: FontWeight.normal,
     fontSize: SysSize.normal,
-    color: ColorPlate.black,
+    color: StColor.black,
     inherit: true,
     height: 1.4,
   );
@@ -36,7 +36,7 @@ class StandardTextStyle {
     // fontFamily: 'MyraidPro',
     fontWeight: FontWeight.normal,
     fontSize: SysSize.small,
-    color: ColorPlate.gray,
+    color: StColor.gray,
     inherit: true,
     height: 1.4,
   );

@@ -20,7 +20,7 @@ class VolumnSlider extends StatefulWidget {
     Key? key,
     required this.value,
     this.onEnd,
-    this.color = ColorPlate.primary,
+    this.color = StColor.primary,
     this.iconBuilder,
     this.onScroll,
     this.max = 4,
@@ -158,7 +158,7 @@ class _Dot extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(_kDotTouchExpandedSize),
-      color: ColorPlate.clear,
+      color: StColor.clear,
       child: Container(
         height: _kDotViewHeight,
         width: _kDotViewWidth,
@@ -168,7 +168,7 @@ class _Dot extends StatelessWidget {
           ),
           shadows: [
             BoxShadow(
-              color: ColorPlate.black.withOpacity(0.12),
+              color: StColor.black.withOpacity(0.12),
               blurRadius: 8,
               offset: Offset(0, 2),
             ),
@@ -178,7 +178,7 @@ class _Dot extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(9999),
-            border: Border.all(color: ColorPlate.white, width: 3),
+            border: Border.all(color: StColor.white, width: 3),
           ),
           // child: ,
         ),
@@ -209,7 +209,7 @@ class _SliderBody extends StatelessWidget {
         height: 8,
         child: Stack(
           children: <Widget>[
-            Container(color: ColorPlate.lightGray),
+            Container(color: StColor.lightGray),
             Container(
               width:
                   (bodyWidth - _kBodyRadius * 2) * value / max + _kBodyRadius,
@@ -229,7 +229,7 @@ class _SliderBody extends StatelessWidget {
                   //     decoration: BoxDecoration(
                   //       color: value < i + 1
                   //           ? color.withOpacity(0.1)
-                  //           : ColorPlate.white.withOpacity(0.20),
+                  //           : StColor.white.withOpacity(0.20),
                   //       borderRadius: BorderRadius.circular(10),
                   //     ),
                   //   ),

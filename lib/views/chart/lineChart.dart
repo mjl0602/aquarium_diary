@@ -9,7 +9,7 @@ import 'package:aquarium_diary/views/chart/tools/YAxisScal.dart';
 import 'dart:math' as math;
 import 'model/chartData.dart';
 
-get _lineColor => ColorPlate.halfGray.withOpacity(0.5);
+get _lineColor => StColor.halfGray.withOpacity(0.5);
 
 class LineChart extends StatefulWidget {
   final List<ChartData> list;
@@ -24,7 +24,7 @@ class LineChart extends StatefulWidget {
   const LineChart({
     Key? key,
     required this.list,
-    this.color = ColorPlate.primary,
+    this.color = StColor.primary,
     this.minValue = 0,
     this.fillArea = true,
     required this.unit,
@@ -299,7 +299,7 @@ class LineChartPainter extends CustomPainter {
       //     drawDot(
       //       offset,
       //       _w - 4,
-      //       ColorPlate.white,
+      //       StColor.white,
       //     );
       //   }
       // }
@@ -312,7 +312,7 @@ class LineChartPainter extends CustomPainter {
       text: TextSpan(
         text: msg,
         style: TextStyle(
-          color: ColorPlate.white,
+          color: StColor.white,
           height: oneLineH,
           fontSize: 12,
         ),
@@ -376,7 +376,7 @@ class LineChartPainter extends CustomPainter {
 
   drawBorderDot(Offset offset, double size, double border, Color color) {
     drawDot(offset, size, color);
-    drawDot(offset, size - border, ColorPlate.white);
+    drawDot(offset, size - border, StColor.white);
   }
 
   /// 绘制关键点
@@ -647,7 +647,7 @@ class LineChartPainter extends CustomPainter {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: ColorPlate.black, fontSize: 12),
+        style: TextStyle(color: StColor.black, fontSize: 12),
       ),
       textAlign: TextAlign.left,
       textDirection: TextDirection.ltr,
@@ -666,7 +666,7 @@ class LineChartPainter extends CustomPainter {
     TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: TextStyle(color: ColorPlate.black, fontSize: 12),
+        style: TextStyle(color: StColor.black, fontSize: 12),
       ),
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,

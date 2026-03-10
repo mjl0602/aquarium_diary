@@ -26,7 +26,7 @@ class StButton extends StatelessWidget {
     this.icon,
     required this.title,
     this.onTap,
-    this.color = ColorPlate.primary,
+    this.color = StColor.primary,
     this.background = true,
     this.primary = false,
     this.medium = true,
@@ -39,7 +39,7 @@ class StButton extends StatelessWidget {
   }) : super(key: key);
 
   Color get textColor {
-    return primary ? ColorPlate.white : color;
+    return primary ? StColor.white : color;
   }
 
   @override

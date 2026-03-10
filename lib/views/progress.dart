@@ -11,7 +11,7 @@ class Progress extends StatelessWidget {
     Key? key,
     this.progress = 1.0,
     this.height = 8,
-    this.color = ColorPlate.primary,
+    this.color = StColor.primary,
     this.reversed = false,
   }) : super(key: key);
 
@@ -23,7 +23,7 @@ class Progress extends StatelessWidget {
         height: height,
         child: Stack(
           children: <Widget>[
-            Container(color: ColorPlate.lightGray),
+            Container(color: StColor.lightGray),
             Container(
               width: double.infinity,
               child: FractionallySizedBox(

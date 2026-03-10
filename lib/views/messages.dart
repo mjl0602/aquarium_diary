@@ -128,7 +128,7 @@ class _MsgTagState extends State<_MsgTag> {
         },
         child: Container(
           decoration: ShapeDecoration(
-            color: ColorPlate.black.withOpacity(0.4),
+            color: StColor.black.withOpacity(0.4),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4000),
             ),
@@ -138,7 +138,7 @@ class _MsgTagState extends State<_MsgTag> {
           padding: EdgeInsets.symmetric(horizontal: 22, vertical: 6),
           child: StText.small(
             widget.title,
-            style: TextStyle(color: ColorPlate.white),
+            style: TextStyle(color: StColor.white),
           ),
         ),
       ),
