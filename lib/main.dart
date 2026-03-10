@@ -85,7 +85,6 @@ class _MyAppState extends State<MyApp> {
       title: 'Aquarium Diary',
       theme: buildOceanTheme(),
       home: HomePage(),
-      // home: BleTestPage(),
     );
   }
 }

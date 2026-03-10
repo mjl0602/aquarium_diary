@@ -124,6 +124,4 @@ flutter:
   assets:
     # fmaker
     - assets/example.png
-    - assets/homeBg.png
-    - assets/scanMark.png
     # fmaker-end
