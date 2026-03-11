@@ -38,8 +38,8 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
 
   // 其他状态变量
   CreatureCategory? _selectedCategory;
-  Aggressiveness? _selectedAggressiveness;
-  CoralCompatibility? _selectedCoralCompatibility;
+  Aggressiveness _selectedAggressiveness = Aggressiveness.peaceful;
+  CoralCompatibility _selectedCoralCompatibility = CoralCompatibility.safe;
   CreatureStatus? _selectedStatusType;
   DateTime? _entryDate;
   DateTime? _quarantineEndDate;
@@ -82,7 +82,8 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
     _selectedCategory = creature?.category;
     _selectedAggressiveness =
         creature?.aggressiveness ?? Aggressiveness.peaceful; // 默认温和
-    _selectedCoralCompatibility = creature?.coralCompatibility;
+    _selectedCoralCompatibility =
+        creature?.coralCompatibility ?? CoralCompatibility.safe;
     _selectedStatusType = creature?.statusType;
     _entryDate = creature?.entryDate;
     _quarantineEndDate = creature?.quarantineEndDate;
@@ -369,22 +370,24 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
                                 value: _selectedAggressiveness,
                                 items: Aggressiveness.values,
                                 itemDisplayName: (e) => e.label,
-                                onChanged: (v) =>
-                                    setState(() => _selectedAggressiveness = v),
+                                onChanged: (v) => setState(
+                                  () => _selectedAggressiveness =
+                                      v ?? Aggressiveness.peaceful,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: FormDropdown<CoralCompatibility?>(
+                              child: FormDropdown<CoralCompatibility>(
                                 label: '珊瑚兼容性',
                                 value: _selectedCoralCompatibility,
-                                items: [null, ...CoralCompatibility.values],
+                                items: CoralCompatibility.values,
                                 itemDisplayName: (e) {
-                                  if (e == null) return '不适用';
                                   return e.label;
                                 },
                                 onChanged: (v) => setState(
-                                  () => _selectedCoralCompatibility = v,
+                                  () => _selectedCoralCompatibility =
+                                      v ?? CoralCompatibility.safe,
                                 ),
                               ),
                             ),

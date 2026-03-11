@@ -2,9 +2,11 @@
 
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/pages/debug/debugBtnsPage.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
+import 'package:aquarium_diary/tools/eazyPush.dart';
 import 'package:flutter/material.dart';
 import 'package:tapped/tapped.dart';
 
@@ -101,7 +103,9 @@ class _HomePageState extends State<HomePage>
               ),
               actions: [
                 Tapped(
-                  onTap: () {},
+                  onTap: () {
+                    DebugBtnsPage().pushAsPage(context);
+                  },
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Icon(Icons.more_vert, color: StColor.darkGray),

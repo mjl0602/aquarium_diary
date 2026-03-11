@@ -200,7 +200,7 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        FormDropdown<AquariumStructure>(
+                        FormGridPicker<AquariumStructure>(
                           label: '鱼缸结构',
                           value: _selectedStructure,
                           items: AquariumStructure.values,

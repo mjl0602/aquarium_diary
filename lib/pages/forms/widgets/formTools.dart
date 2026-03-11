@@ -1,4 +1,3 @@
-
 // ---------- 现代风格组件 ----------
 
 import 'package:aquarium_diary/style/color.dart';
@@ -138,6 +137,96 @@ class FormDropdown<T> extends StatelessWidget {
               onChanged: onChanged,
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+/// 网格单选选择器（3列换行按钮，高亮选中项）
+class FormGridPicker<T> extends StatelessWidget {
+  final String label;
+  final T? value;
+  final List<T> items;
+  final String Function(T) itemDisplayName;
+  final void Function(T?) onChanged;
+
+  const FormGridPicker({
+    Key? key,
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.itemDisplayName,
+    required this.onChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // 获取屏幕宽度用于计算每项尺寸
+    final screenWidth = MediaQuery.of(context).size.width;
+    // 左右外边距参考卡片内边距（通常 20px 左右），这里取 20
+    final horizontalPadding = 20.0;
+    // Wrap 的间距
+    final spacing = 8.0;
+    final runSpacing = 8.0;
+    // 每项宽度 = (总宽 - 左右边距 - 2*间距) / 3
+    final itemWidth = (screenWidth - horizontalPadding * 2 - spacing * 2) / 3;
+    final itemHeight = 40.0; // 固定高度，可调整
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 标签（与 FormDropdown 完全一致）
+        StText.small(
+          label,
+          style: TextStyle(
+            color: StColor.gray,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        // 网格区域（无边框，仅按钮）
+        Wrap(
+          spacing: spacing,
+          runSpacing: runSpacing,
+          children: items.map((item) {
+            final isSelected = value == item;
+            return FractionallySizedBox(
+              widthFactor: 0.3,
+              child: Tapped(
+                onTap: () => onChanged(item),
+                child: Container(
+                  width: itemWidth,
+                  height: itemHeight,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? StColor.primary.withOpacity(0.1)
+                        : Colors.transparent,
+                    border: Border.all(
+                      color: isSelected
+                          ? StColor.primary
+                          : StColor.halfGray.withOpacity(0.5),
+                      width: isSelected ? 1.5 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: StText.small(
+                      itemDisplayName(item),
+                      style: TextStyle(
+                        color: isSelected ? StColor.primary : StColor.darkGray,
+                        fontWeight: isSelected
+                            ? FontWeight.w500
+                            : FontWeight.normal,
+                      ),
+                      align: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
