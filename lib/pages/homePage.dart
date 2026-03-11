@@ -2,6 +2,7 @@
 
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,25 @@ class _HomePageState extends State<HomePage>
       .difference(demoAquarium.createdAt)
       .inDays;
 
+  Future<void> _showSelector() async {
+    // 模拟鱼缸列表（实际从数据库获取）
+    final List<Aquarium> aquariums = [
+      demoAquarium,
+      // 可以添加其他模拟鱼缸
+    ];
+    final selected = await showAquariumSelector(
+      context: context,
+      aquariums: aquariums,
+      currentAquarium: demoAquarium,
+    );
+    if (selected != null) {
+      setState(() {
+        // 切换当前鱼缸
+        // 这里需要更新 demoAquarium 和相关数据，实际项目中应重新加载数据
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -69,11 +89,14 @@ class _HomePageState extends State<HomePage>
               floating: false,
               pinned: true,
               centerTitle: false,
-              title: StText.big(
-                demoAquarium.name,
-                style: const TextStyle(
-                  color: StColor.darkGray,
-                  fontWeight: FontWeight.w600,
+              title: Tapped(
+                onTap: _showSelector,
+                child: StText.big(
+                  demoAquarium.name,
+                  style: const TextStyle(
+                    color: StColor.darkGray,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               actions: [
