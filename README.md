@@ -2,15 +2,10 @@
 
 鱼缸日记是完全开源的养鱼记录APP，数据均保存在本地。
 
-## Getting Started
+## 开发详情
 
-This project is a starting point for a Flutter application.
+本项目尽量使用VibeCoding的形式进行
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. 主页: 由人类作者升级并古法编程创建
+2. 数据类: 使用Kimi 2.5快速生成
+3. 表单: 使用Deepseek 3.2生成

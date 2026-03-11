@@ -73,26 +73,22 @@ class _EquipmentFormPageState extends State<EquipmentFormPage> {
 
   // 模拟从数据库加载鱼缸列表（实际项目请替换为真实查询）
   Future<void> _loadAquariums() async {
-    // 假设有一个全局的 Isar 实例或服务
-    // final isar = await Isar.getInstance();
-    // final aquariums = await isar.aquariums.where().findAll();
-    // 模拟数据
     await Future.delayed(Duration.zero);
     final mockAquariums = <Aquarium>[]; // 实际替换为数据库数据
     setState(() {
-      _aquariums = mockAquariums;
-      // 预选逻辑
-      if (widget.initialAquariumId != null) {
-        _selectedAquarium = _aquariums.firstWhere(
-          (a) => a.id == widget.initialAquariumId,
-          orElse: () => null as Aquarium,
-        );
-      } else if (widget.equipment?.aquariumId != null) {
-        _selectedAquarium = _aquariums.firstWhere(
-          (a) => a.id == widget.equipment!.aquariumId,
-          orElse: () => null as Aquarium,
-        );
-      }
+      // _aquariums = mockAquariums;
+      // // 预选逻辑
+      // if (widget.initialAquariumId != null) {
+      //   _selectedAquarium = _aquariums.firstWhere(
+      //     (a) => a.id == widget.initialAquariumId,
+      //     orElse: () => null as Aquarium,
+      //   );
+      // } else if (widget.equipment?.aquariumId != null) {
+      //   _selectedAquarium = _aquariums.firstWhere(
+      //     (a) => a.id == widget.equipment!.aquariumId,
+      //     orElse: () => null as Aquarium,
+      //   );
+      // }
     });
   }
 
