@@ -32,9 +32,9 @@ const AquariumSchema = CollectionSchema(
     r'lengthMm': PropertySchema(id: 4, name: r'lengthMm', type: IsarType.long),
     r'name': PropertySchema(id: 5, name: r'name', type: IsarType.string),
     r'notes': PropertySchema(id: 6, name: r'notes', type: IsarType.string),
-    r'purchaseDate': PropertySchema(
+    r'startDate': PropertySchema(
       id: 7,
-      name: r'purchaseDate',
+      name: r'startDate',
       type: IsarType.dateTime,
     ),
     r'structure': PropertySchema(
@@ -90,7 +90,7 @@ void _aquariumSerialize(
   writer.writeLong(offsets[4], object.lengthMm);
   writer.writeString(offsets[5], object.name);
   writer.writeString(offsets[6], object.notes);
-  writer.writeDateTime(offsets[7], object.purchaseDate);
+  writer.writeDateTime(offsets[7], object.startDate);
   writer.writeByte(offsets[8], object.structure.index);
   writer.writeLong(offsets[9], object.widthMm);
 }
@@ -109,7 +109,7 @@ Aquarium _aquariumDeserialize(
     lengthMm: reader.readLongOrNull(offsets[4]),
     name: reader.readString(offsets[5]),
     notes: reader.readStringOrNull(offsets[6]),
-    purchaseDate: reader.readDateTimeOrNull(offsets[7]),
+    startDate: reader.readDateTimeOrNull(offsets[7]),
     structure:
         _AquariumstructureValueEnumMap[reader.readByteOrNull(offsets[8])] ??
         AquariumStructure.bottomFilter,
@@ -939,47 +939,48 @@ extension AquariumQueryFilter
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> purchaseDateIsNull() {
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'purchaseDate'),
+        const FilterCondition.isNull(property: r'startDate'),
       );
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition>
-  purchaseDateIsNotNull() {
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'purchaseDate'),
+        const FilterCondition.isNotNull(property: r'startDate'),
       );
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> purchaseDateEqualTo(
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateEqualTo(
     DateTime? value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'purchaseDate', value: value),
+        FilterCondition.equalTo(property: r'startDate', value: value),
       );
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition>
-  purchaseDateGreaterThan(DateTime? value, {bool include = false}) {
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'purchaseDate',
+          property: r'startDate',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> purchaseDateLessThan(
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateLessThan(
     DateTime? value, {
     bool include = false,
   }) {
@@ -987,14 +988,14 @@ extension AquariumQueryFilter
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'purchaseDate',
+          property: r'startDate',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> purchaseDateBetween(
+  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> startDateBetween(
     DateTime? lower,
     DateTime? upper, {
     bool includeLower = true,
@@ -1003,7 +1004,7 @@ extension AquariumQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'purchaseDate',
+          property: r'startDate',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -1239,15 +1240,15 @@ extension AquariumQuerySortBy on QueryBuilder<Aquarium, Aquarium, QSortBy> {
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByPurchaseDate() {
+  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByStartDate() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'purchaseDate', Sort.asc);
+      return query.addSortBy(r'startDate', Sort.asc);
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByPurchaseDateDesc() {
+  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByStartDateDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'purchaseDate', Sort.desc);
+      return query.addSortBy(r'startDate', Sort.desc);
     });
   }
 
@@ -1374,15 +1375,15 @@ extension AquariumQuerySortThenBy
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByPurchaseDate() {
+  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByStartDate() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'purchaseDate', Sort.asc);
+      return query.addSortBy(r'startDate', Sort.asc);
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByPurchaseDateDesc() {
+  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByStartDateDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'purchaseDate', Sort.desc);
+      return query.addSortBy(r'startDate', Sort.desc);
     });
   }
 
@@ -1459,9 +1460,9 @@ extension AquariumQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByPurchaseDate() {
+  QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByStartDate() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'purchaseDate');
+      return query.addDistinctBy(r'startDate');
     });
   }
 
@@ -1528,9 +1529,9 @@ extension AquariumQueryProperty
     });
   }
 
-  QueryBuilder<Aquarium, DateTime?, QQueryOperations> purchaseDateProperty() {
+  QueryBuilder<Aquarium, DateTime?, QQueryOperations> startDateProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'purchaseDate');
+      return query.addPropertyName(r'startDate');
     });
   }
 

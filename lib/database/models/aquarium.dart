@@ -13,7 +13,7 @@ class Aquarium {
   @enumerated
   late AquariumStructure structure;
 
-  DateTime? purchaseDate;
+  DateTime? startDate;
 
   int? lengthMm;
 
@@ -27,12 +27,15 @@ class Aquarium {
 
   late DateTime createdAt;
 
+  @ignore
+  int get daysSinceSetup => DateTime.now().difference(createdAt).inDays;
+
   String? notes;
 
   Aquarium({
     required this.name,
     required this.structure,
-    this.purchaseDate,
+    this.startDate,
     this.lengthMm,
     this.widthMm,
     this.heightMm,
@@ -46,7 +49,7 @@ class Aquarium {
     return Aquarium(
       name: json['name'] as String,
       structure: AquariumStructure.values.byName(json['structure'] as String),
-      purchaseDate: json['purchaseDate'] != null
+      startDate: json['purchaseDate'] != null
           ? DateTime.parse(json['purchaseDate'] as String)
           : null,
       lengthMm: json['lengthMm'] as int?,
@@ -64,7 +67,7 @@ class Aquarium {
       'id': id,
       'name': name,
       'structure': structure.name,
-      'purchaseDate': purchaseDate?.toIso8601String(),
+      'purchaseDate': startDate?.toIso8601String(),
       'lengthMm': lengthMm,
       'widthMm': widthMm,
       'heightMm': heightMm,

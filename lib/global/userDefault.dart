@@ -9,6 +9,8 @@ class UserDefault {
   /// 判断第一次进入App
   static var notFirstOpen = DefaultValueCache<bool>('notFirstOpen', false);
 
+  static var homePageAQ = DefaultValueCache<int?>('homePageAQ', null);
+
   /// 可调试
   static var canDebug = DefaultValueCache('canDebug', false);
   static var fconsoleShow = DefaultValueCache('fconsoleShow', false);

@@ -123,5 +123,6 @@ flutter:
 
   assets:
     # fmaker
+    - assets/aq_test_main_img.png
     - assets/example.png
     # fmaker-end

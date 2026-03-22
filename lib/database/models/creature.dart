@@ -32,6 +32,10 @@ class Creature {
 
   DateTime? entryDate;
 
+  @ignore
+  int? get daysSinceSetup =>
+      entryDate == null ? null : DateTime.now().difference(entryDate!).inDays;
+
   DateTime? quarantineEndDate;
 
   @enumerated

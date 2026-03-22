@@ -1,14 +1,17 @@
 // lib/pages/creature_form_page.dart
 
+import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/pages/forms/widgets/formTools.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
+import 'package:aquarium_diary/tools/eazyPush.dart';
 import 'package:aquarium_diary/tools/inputHelper.dart';
 import 'package:aquarium_diary/views/cancelFocus.dart';
 import 'package:flutter/material.dart';
+import 'package:isar_community/isar.dart';
 import 'package:tapped/tapped.dart';
 
 class CreatureFormPage extends StatefulWidget {
@@ -17,6 +20,21 @@ class CreatureFormPage extends StatefulWidget {
 
   const CreatureFormPage({Key? key, this.creature, this.initialAquariumId})
     : super(key: key);
+
+  static Future<Creature?> add(
+    BuildContext context,
+    int initialAquariumId,
+  ) async {
+    final targetItem = await CreatureFormPage(
+      initialAquariumId: initialAquariumId,
+    ).pushAsPage<Creature>(context);
+    if (targetItem is! Creature) return null;
+    await isar.writeTxn(() async {
+      final id = await isar.creatures.put(targetItem);
+      targetItem.id = id;
+    });
+    return targetItem;
+  }
 
   @override
   _CreatureFormPageState createState() => _CreatureFormPageState();
@@ -37,10 +55,10 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
   late InputHelper _notesHelper;
 
   // 其他状态变量
-  CreatureCategory? _selectedCategory;
+  CreatureCategory _selectedCategory = CreatureCategory.fish;
   Aggressiveness _selectedAggressiveness = Aggressiveness.peaceful;
   CoralCompatibility _selectedCoralCompatibility = CoralCompatibility.safe;
-  CreatureStatus? _selectedStatusType;
+  CreatureStatus _selectedStatusType = CreatureStatus.alive;
   DateTime? _entryDate;
   DateTime? _quarantineEndDate;
   DateTime? _purchaseDate;
@@ -79,12 +97,12 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
     _tagsHelper = InputHelper(defaultText: creature?.tags?.join(', ') ?? '');
     _notesHelper = InputHelper(defaultText: creature?.notes ?? '');
 
-    _selectedCategory = creature?.category;
+    _selectedCategory = creature?.category ?? CreatureCategory.fish;
     _selectedAggressiveness =
         creature?.aggressiveness ?? Aggressiveness.peaceful; // 默认温和
     _selectedCoralCompatibility =
         creature?.coralCompatibility ?? CoralCompatibility.safe;
-    _selectedStatusType = creature?.statusType;
+    _selectedStatusType = creature?.statusType ?? CreatureStatus.alive;
     _entryDate = creature?.entryDate;
     _quarantineEndDate = creature?.quarantineEndDate;
     _purchaseDate = creature?.purchaseDate;
@@ -92,31 +110,18 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
     _isArchived = creature?.isArchived ?? false;
 
     _loadAquariums();
+    if (_speciesNameHelper.text.isEmpty) {
+      _speciesNameHelper.focusNode.requestFocus();
+    }
   }
 
   // 模拟从数据库加载鱼缸列表（实际项目请替换为真实查询）
   Future<void> _loadAquariums() async {
-    // 假设有一个全局的 Isar 实例或服务
-    // final isar = await Isar.getInstance();
-    // final aquariums = await isar.aquariums.where().findAll();
-    // 模拟数据
-    await Future.delayed(Duration.zero);
-    final mockAquariums = <Aquarium>[]; // 实际替换为数据库数据
-    setState(() {
-      _aquariums = mockAquariums;
-      // 预选逻辑
-      if (widget.initialAquariumId != null) {
-        _selectedAquarium = _aquariums.firstWhere(
-          (a) => a.id == widget.initialAquariumId,
-          orElse: () => null as Aquarium,
-        );
-      } else if (widget.creature?.aquariumId != null) {
-        _selectedAquarium = _aquariums.firstWhere(
-          (a) => a.id == widget.creature!.aquariumId,
-          orElse: () => null as Aquarium,
-        );
-      }
-    });
+    _aquariums = await isar.aquariums.where().findAll();
+    for (var item in _aquariums) {
+      if (item.id == widget.initialAquariumId) _selectedAquarium = item;
+    }
+    setState(() {});
   }
 
   // 保存按钮点击处理
@@ -126,18 +131,6 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
       setState(() {
         _speciesNameError = '请输入物种名';
       });
-      return;
-    }
-    if (_selectedCategory == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请选择生物分类')));
-      return;
-    }
-    if (_selectedStatusType == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请选择状态类型')));
       return;
     }
 
@@ -214,13 +207,12 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
           : _nicknameHelper.text.trim(),
       quantity: quantity,
       sizeCm: sizeCm,
-      aggressiveness: _selectedAggressiveness!,
-      coralCompatibility:
-          _selectedCoralCompatibility ?? CoralCompatibility.safe,
+      aggressiveness: _selectedAggressiveness,
+      coralCompatibility: _selectedCoralCompatibility,
       mainImageId: widget.creature?.mainImageId, // 保持原样，图片暂不处理
       entryDate: _entryDate,
       quarantineEndDate: _quarantineEndDate,
-      statusType: _selectedStatusType!,
+      statusType: _selectedStatusType,
       statusNote: _statusNoteHelper.text.trim().isEmpty
           ? null
           : _statusNoteHelper.text.trim(),
@@ -310,8 +302,10 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
                           value: _selectedCategory,
                           items: CreatureCategory.values,
                           itemDisplayName: (e) => e.label,
-                          onChanged: (v) =>
-                              setState(() => _selectedCategory = v),
+                          onChanged: (v) => setState(
+                            () =>
+                                _selectedCategory = v ?? CreatureCategory.fish,
+                          ),
                         ),
                         const SizedBox(height: 20),
 
@@ -425,8 +419,10 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
                           value: _selectedStatusType,
                           items: CreatureStatus.values,
                           itemDisplayName: (e) => e.label,
-                          onChanged: (v) =>
-                              setState(() => _selectedStatusType = v),
+                          onChanged: (v) => setState(
+                            () =>
+                                _selectedStatusType = v ?? CreatureStatus.alive,
+                          ),
                         ),
                         const SizedBox(height: 20),
 

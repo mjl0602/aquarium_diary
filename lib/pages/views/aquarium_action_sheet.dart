@@ -1,27 +1,63 @@
 // lib/widgets/aquarium_selector.dart
 
+import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/global/userDefault.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:flutter/material.dart';
+import 'package:isar_community/isar.dart';
 import 'package:tapped/tapped.dart';
 
 /// 从顶部弹出的鱼缸选择器
-class AquariumSelector extends StatelessWidget {
-  final List<Aquarium> aquariums; // 所有鱼缸列表
+class AquariumSelector extends StatefulWidget {
   final Aquarium? currentAquarium; // 当前选中的鱼缸
-  final ValueChanged<Aquarium> onSelect; // 选择鱼缸回调
-  final VoidCallback onAdd; // 添加鱼缸回调
 
-  const AquariumSelector({
-    Key? key,
-    required this.aquariums,
-    required this.currentAquarium,
-    required this.onSelect,
-    required this.onAdd,
-  }) : super(key: key);
+  const AquariumSelector({Key? key, required this.currentAquarium})
+    : super(key: key);
+
+  /// 显示鱼缸选择器的便捷方法
+  static Future<Aquarium?> select({
+    required BuildContext context,
+    required Aquarium? currentAquarium,
+  }) {
+    return showGeneralDialog<Aquarium>(
+      context: context,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return AquariumSelector(currentAquarium: currentAquarium);
+      },
+      barrierDismissible: true,
+      barrierLabel: 'Dismiss',
+      transitionDuration: const Duration(milliseconds: 200),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        // 从顶部滑入动画
+        final offsetAnimation = Tween<Offset>(
+          begin: const Offset(0, -1),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
+        return SlideTransition(position: offsetAnimation, child: child);
+      },
+    );
+  }
+
+  @override
+  State<AquariumSelector> createState() => _AquariumSelectorState();
+}
+
+class _AquariumSelectorState extends State<AquariumSelector> {
+  List<Aquarium> aquariums = [];
+  loadData() async {
+    aquariums = await isar.aquariums.where().findAll();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +72,9 @@ class AquariumSelector extends StatelessWidget {
         child: Container(
           width: mediaQuery.size.width,
           margin: EdgeInsets.only(
-            top: mediaQuery.padding.top + kToolbarHeight, // 从标题栏下方开始
-            left: 16,
-            right: 16,
+            top: mediaQuery.padding.top + 10, // 从标题栏下方开始
+            left: 10,
+            right: 10,
           ),
           constraints: BoxConstraints(maxHeight: maxHeight),
           decoration: BoxDecoration(
@@ -47,7 +83,7 @@ class AquariumSelector extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
+                blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
             ],
@@ -71,7 +107,7 @@ class AquariumSelector extends StatelessWidget {
                     ),
                     Tapped(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.close, color: StColor.gray),
+                      child: const Icon(Icons.expand_less, color: StColor.gray),
                     ),
                   ],
                 ),
@@ -85,7 +121,8 @@ class AquariumSelector extends StatelessWidget {
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final aquarium = aquariums[index];
-                    final isSelected = currentAquarium?.id == aquarium.id;
+                    final isSelected =
+                        widget.currentAquarium?.id == aquarium.id;
                     return _buildAquariumItem(aquarium, isSelected, context);
                   },
                 ),
@@ -94,9 +131,11 @@ class AquariumSelector extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Tapped(
-                  onTap: () {
-                    Navigator.pop(context); // 关闭选择器
-                    onAdd();
+                  onTap: () async {
+                    final targetAQ = await AquariumFormPage.add(context);
+                    if (targetAQ == null) return;
+                    // UserDefault.homePageAQ.value = targetAQ.id;
+                    loadData();
                   },
                   child: Container(
                     height: 48,
@@ -127,8 +166,7 @@ class AquariumSelector extends StatelessWidget {
   ) {
     return Tapped(
       onTap: () {
-        onSelect(aquarium);
-        Navigator.pop(context);
+        Navigator.pop(context, aquarium);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -136,8 +174,8 @@ class AquariumSelector extends StatelessWidget {
           children: [
             // 图标（可根据结构显示不同图标）
             Container(
-              width: 40,
-              height: 40,
+              width: 120,
+              height: 90,
               decoration: BoxDecoration(
                 color: StColor.lightGray,
                 borderRadius: BorderRadius.circular(8),
@@ -191,44 +229,4 @@ class AquariumSelector extends StatelessWidget {
         return Icons.crop_square;
     }
   }
-}
-
-/// 显示鱼缸选择器的便捷方法
-Future<Aquarium?> showAquariumSelector({
-  required BuildContext context,
-  required List<Aquarium> aquariums,
-  required Aquarium? currentAquarium,
-}) {
-  return showGeneralDialog<Aquarium>(
-    context: context,
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return AquariumSelector(
-        aquariums: aquariums,
-        currentAquarium: currentAquarium,
-        onSelect: (selected) => Navigator.pop(context, selected),
-        onAdd: () async {
-          // 跳转到鱼缸表单页面，等待返回新鱼缸
-          final newAquarium = await Navigator.push<Aquarium>(
-            context,
-            MaterialPageRoute(builder: (_) => AquariumFormPage()),
-          );
-          if (newAquarium != null) {
-            // 这里不直接返回，因为需要刷新列表，交给调用方处理
-            Navigator.pop(context, newAquarium);
-          }
-        },
-      );
-    },
-    barrierDismissible: true,
-    barrierLabel: 'Dismiss',
-    transitionDuration: const Duration(milliseconds: 200),
-    transitionBuilder: (context, animation, secondaryAnimation, child) {
-      // 从顶部滑入动画
-      final offsetAnimation = Tween<Offset>(
-        begin: const Offset(0, -1),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut));
-      return SlideTransition(position: offsetAnimation, child: child);
-    },
-  );
 }

@@ -1,5 +1,6 @@
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/consumable.dart';
+import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/database/models/creature_status_change.dart';
 import 'package:aquarium_diary/database/models/equipment.dart';
 import 'package:aquarium_diary/database/models/maintenance_record.dart';
@@ -16,6 +17,7 @@ abstract class DataBase {
     isar = await Isar.open([
       AquariumSchema,
       ConsumableSchema,
+      CreatureSchema,
       CreatureStatusChangeSchema,
       EquipmentSchema,
       MaintenanceRecordSchema,

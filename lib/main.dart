@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
-import 'package:aquarium_diary/pages/homePage.dart';
+import 'package:aquarium_diary/pages/home_page.dart';
 import 'package:aquarium_diary/style/theme.dart';
 import 'package:fconsole/fconsole.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:local_cache_sync/local_cache_sync.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
@@ -85,6 +86,17 @@ class _MyAppState extends State<MyApp> {
       title: 'Aquarium Diary',
       theme: buildOceanTheme(),
       home: HomePage(),
+      // 可指定默认语言
+      locale: const Locale('zh', 'CN'),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate, // 添加Cupertino本地化
+      ],
+      supportedLocales: [
+        const Locale('zh', 'CN'), // 中文
+        const Locale('en', 'US'), // 英文
+      ],
     );
   }
 }
