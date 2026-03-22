@@ -6,8 +6,8 @@
 
 UI代码风格：
 
-1. 每个dart文件一般是一个页面，有一个主要的StatefulWidget，剩余的Widget一般都是Stateless的，偶尔需要创建内部临时变量或者动画的除外
-2. 尽量使用StatelessWidget，而不是使用Function创建widget
+1. [非常重要]尽量使用StatelessWidget，而不是使用Function创建widget！
+2. 每个dart文件一般是一个页面，有一个主要的StatefulWidget，剩余的Widget一般都是Stateless的，偶尔需要创建内部临时变量或者动画的除外
 3. 颜色必须从StColor中取，地址在"lib/style/color.dart"，专属色可根据每个项目替换
 4. 文字尽量使用StText的API，地址在"lib/style/text.dart"，你不需要实现StText，请直接使用。StText支持small,normal,medium,big,API:const StText.medium(String? text, {Key? key,TextStyle? style,TextAlign? align,int? maxLines,})
 5. 普通页面一般使用Scaffold+Appbar，尽量不使用Material的卡片和阴影风格，尽量使用Container的decoration
