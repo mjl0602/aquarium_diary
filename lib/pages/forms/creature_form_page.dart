@@ -4,11 +4,11 @@ import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/creature.dart';
-import 'package:aquarium_diary/pages/forms/widgets/formTools.dart';
+import 'package:aquarium_diary/pages/forms/widgets/form_tools.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/eazyPush.dart';
-import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/tools/eazy_push.dart';
+import 'package:aquarium_diary/tools/input_helper.dart';
 import 'package:aquarium_diary/views/cancelFocus.dart';
 import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
@@ -209,7 +209,7 @@ class _CreatureFormPageState extends State<CreatureFormPage> {
       sizeCm: sizeCm,
       aggressiveness: _selectedAggressiveness,
       coralCompatibility: _selectedCoralCompatibility,
-      mainImageId: widget.creature?.mainImageId, // 保持原样，图片暂不处理
+      mainMediaId: widget.creature?.mainMediaId, // 保持原样，图片暂不处理
       entryDate: _entryDate,
       quarantineEndDate: _quarantineEndDate,
       statusType: _selectedStatusType,

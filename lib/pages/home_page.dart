@@ -6,14 +6,14 @@ import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/database/models/equipment.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
-import 'package:aquarium_diary/pages/debug/debugBtnsPage.dart';
+import 'package:aquarium_diary/pages/debug/debug_btns_page.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
 import 'package:aquarium_diary/pages/forms/creature_form_page.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/eazyPush.dart';
+import 'package:aquarium_diary/tools/eazy_push.dart';
 import 'package:aquarium_diary/views/blankListHintView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -308,11 +308,6 @@ class AquariumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final topPadding = MediaQuery.of(context).padding.top + kToolbarHeight;
-    // 将毫米转换为厘米显示
-    final lengthCm = (aquarium.lengthMm ?? 0) / 10;
-    final widthCm = (aquarium.widthMm ?? 0) / 10;
-    final heightCm = (aquarium.heightMm ?? 0) / 10;
     final waterCapacity = aquarium.capacityLiter ?? 0.0;
 
     return Container(
@@ -375,7 +370,7 @@ class AquariumCard extends StatelessWidget {
                   ],
                 ),
                 StText.small(
-                  '${lengthCm.toStringAsFixed(1)}cm × ${widthCm.toStringAsFixed(1)}cm × ${heightCm.toStringAsFixed(1)}cm  •  水体 ${waterCapacity.toStringAsFixed(1)}L',
+                  '水体 ${waterCapacity.toStringAsFixed(1)}L',
                   style: const TextStyle(color: StColor.white),
                 ),
               ],

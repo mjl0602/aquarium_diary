@@ -4,11 +4,11 @@ import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
-import 'package:aquarium_diary/pages/forms/widgets/formTools.dart';
+import 'package:aquarium_diary/pages/forms/widgets/form_tools.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/eazyPush.dart';
-import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/tools/eazy_push.dart';
+import 'package:aquarium_diary/tools/input_helper.dart';
 import 'package:aquarium_diary/views/cancelFocus.dart';
 import 'package:flutter/material.dart';
 import 'package:tapped/tapped.dart';
@@ -37,14 +37,11 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
   // 输入辅助器
   late InputHelper _nameHelper;
   late InputHelper _notesHelper;
-  late InputHelper _lengthHelper;
-  late InputHelper _widthHelper;
-  late InputHelper _heightHelper;
   late InputHelper _capacityHelper;
 
   // 其他状态变量
   AquariumStructure _selectedStructure = AquariumStructure.backFilter;
-  DateTime? _startDate;
+  DateTime? _startDate = DateTime.now();
   bool _isActive = true; // 默认启用
 
   // 表单验证错误
@@ -58,15 +55,6 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
     // 初始化 InputHelper
     _nameHelper = InputHelper(defaultText: aquarium?.name);
     _notesHelper = InputHelper(defaultText: aquarium?.notes);
-    _lengthHelper = InputHelper(
-      defaultText: aquarium?.lengthMm?.toString() ?? '',
-    );
-    _widthHelper = InputHelper(
-      defaultText: aquarium?.widthMm?.toString() ?? '',
-    );
-    _heightHelper = InputHelper(
-      defaultText: aquarium?.heightMm?.toString() ?? '',
-    );
     _capacityHelper = InputHelper(
       defaultText: aquarium?.capacityLiter?.toString() ?? '',
     );
@@ -90,39 +78,10 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
       return;
     }
 
-    // 解析数字（允许为空）
-    int? length = _lengthHelper.text.isEmpty
-        ? null
-        : int.tryParse(_lengthHelper.text);
-    int? width = _widthHelper.text.isEmpty
-        ? null
-        : int.tryParse(_widthHelper.text);
-    int? height = _heightHelper.text.isEmpty
-        ? null
-        : int.tryParse(_heightHelper.text);
     double? capacity = _capacityHelper.text.isEmpty
         ? null
         : double.tryParse(_capacityHelper.text);
 
-    // 如果数字格式错误，给出提示
-    if (_lengthHelper.text.isNotEmpty && length == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('长度必须为整数')));
-      return;
-    }
-    if (_widthHelper.text.isNotEmpty && width == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('宽度必须为整数')));
-      return;
-    }
-    if (_heightHelper.text.isNotEmpty && height == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('高度必须为整数')));
-      return;
-    }
     if (_capacityHelper.text.isNotEmpty && capacity == null) {
       ScaffoldMessenger.of(
         context,
@@ -137,9 +96,6 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
       name: _nameHelper.text.trim(),
       structure: _selectedStructure,
       startDate: _startDate,
-      lengthMm: length,
-      widthMm: width,
-      heightMm: height,
       capacityLiter: capacity,
       isActive: _isActive,
       createdAt: widget.aquarium?.createdAt ?? now, // 新建时使用当前时间
@@ -226,37 +182,6 @@ class _AquariumFormPageState extends State<AquariumFormPage> {
                             label: '开缸时间',
                             date: _startDate,
                             onChanged: (d) => setState(() => _startDate = d),
-                          ),
-                          const SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: FormInput(
-                                  label: '长度(cm)',
-                                  hintText: '填写长度',
-                                  helper: _lengthHelper,
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: FormInput(
-                                  label: '宽度/深度(cm)',
-                                  hintText: '填写深度',
-                                  helper: _widthHelper,
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: FormInput(
-                                  label: '高度(cm)',
-                                  hintText: '填写高度',
-                                  helper: _heightHelper,
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                            ],
                           ),
                           const SizedBox(height: 20),
                           FormInput(

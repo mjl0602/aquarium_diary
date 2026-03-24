@@ -15,12 +15,6 @@ class Aquarium {
 
   DateTime? startDate;
 
-  int? lengthMm;
-
-  int? widthMm;
-
-  int? heightMm;
-
   double? capacityLiter;
 
   bool isActive = true;
@@ -36,9 +30,6 @@ class Aquarium {
     required this.name,
     required this.structure,
     this.startDate,
-    this.lengthMm,
-    this.widthMm,
-    this.heightMm,
     this.capacityLiter,
     this.isActive = true,
     required this.createdAt,
@@ -52,9 +43,6 @@ class Aquarium {
       startDate: json['purchaseDate'] != null
           ? DateTime.parse(json['purchaseDate'] as String)
           : null,
-      lengthMm: json['lengthMm'] as int?,
-      widthMm: json['widthMm'] as int?,
-      heightMm: json['heightMm'] as int?,
       capacityLiter: (json['capacityLiter'] as num?)?.toDouble(),
       isActive: json['isActive'] as bool? ?? true,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -68,9 +56,6 @@ class Aquarium {
       'name': name,
       'structure': structure.name,
       'purchaseDate': startDate?.toIso8601String(),
-      'lengthMm': lengthMm,
-      'widthMm': widthMm,
-      'heightMm': heightMm,
       'capacityLiter': capacityLiter,
       'isActive': isActive,
       'createdAt': createdAt.toIso8601String(),

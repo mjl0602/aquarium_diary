@@ -27,23 +27,20 @@ const AquariumSchema = CollectionSchema(
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
-    r'heightMm': PropertySchema(id: 2, name: r'heightMm', type: IsarType.long),
-    r'isActive': PropertySchema(id: 3, name: r'isActive', type: IsarType.bool),
-    r'lengthMm': PropertySchema(id: 4, name: r'lengthMm', type: IsarType.long),
-    r'name': PropertySchema(id: 5, name: r'name', type: IsarType.string),
-    r'notes': PropertySchema(id: 6, name: r'notes', type: IsarType.string),
+    r'isActive': PropertySchema(id: 2, name: r'isActive', type: IsarType.bool),
+    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'notes': PropertySchema(id: 4, name: r'notes', type: IsarType.string),
     r'startDate': PropertySchema(
-      id: 7,
+      id: 5,
       name: r'startDate',
       type: IsarType.dateTime,
     ),
     r'structure': PropertySchema(
-      id: 8,
+      id: 6,
       name: r'structure',
       type: IsarType.byte,
       enumMap: _AquariumstructureEnumValueMap,
     ),
-    r'widthMm': PropertySchema(id: 9, name: r'widthMm', type: IsarType.long),
   },
 
   estimateSize: _aquariumEstimateSize,
@@ -85,14 +82,11 @@ void _aquariumSerialize(
 ) {
   writer.writeDouble(offsets[0], object.capacityLiter);
   writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeLong(offsets[2], object.heightMm);
-  writer.writeBool(offsets[3], object.isActive);
-  writer.writeLong(offsets[4], object.lengthMm);
-  writer.writeString(offsets[5], object.name);
-  writer.writeString(offsets[6], object.notes);
-  writer.writeDateTime(offsets[7], object.startDate);
-  writer.writeByte(offsets[8], object.structure.index);
-  writer.writeLong(offsets[9], object.widthMm);
+  writer.writeBool(offsets[2], object.isActive);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.notes);
+  writer.writeDateTime(offsets[5], object.startDate);
+  writer.writeByte(offsets[6], object.structure.index);
 }
 
 Aquarium _aquariumDeserialize(
@@ -104,16 +98,13 @@ Aquarium _aquariumDeserialize(
   final object = Aquarium(
     capacityLiter: reader.readDoubleOrNull(offsets[0]),
     createdAt: reader.readDateTime(offsets[1]),
-    heightMm: reader.readLongOrNull(offsets[2]),
-    isActive: reader.readBoolOrNull(offsets[3]) ?? true,
-    lengthMm: reader.readLongOrNull(offsets[4]),
-    name: reader.readString(offsets[5]),
-    notes: reader.readStringOrNull(offsets[6]),
-    startDate: reader.readDateTimeOrNull(offsets[7]),
+    isActive: reader.readBoolOrNull(offsets[2]) ?? true,
+    name: reader.readString(offsets[3]),
+    notes: reader.readStringOrNull(offsets[4]),
+    startDate: reader.readDateTimeOrNull(offsets[5]),
     structure:
-        _AquariumstructureValueEnumMap[reader.readByteOrNull(offsets[8])] ??
+        _AquariumstructureValueEnumMap[reader.readByteOrNull(offsets[6])] ??
         AquariumStructure.bottomFilter,
-    widthMm: reader.readLongOrNull(offsets[9]),
   );
   object.id = id;
   return object;
@@ -131,23 +122,17 @@ P _aquariumDeserializeProp<P>(
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readLongOrNull(offset)) as P;
-    case 3:
       return (reader.readBoolOrNull(offset) ?? true) as P;
-    case 4:
-      return (reader.readLongOrNull(offset)) as P;
-    case 5:
+    case 3:
       return (reader.readString(offset)) as P;
-    case 6:
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
-    case 7:
+    case 5:
       return (reader.readDateTimeOrNull(offset)) as P;
-    case 8:
+    case 6:
       return (_AquariumstructureValueEnumMap[reader.readByteOrNull(offset)] ??
               AquariumStructure.bottomFilter)
           as P;
-    case 9:
-      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -414,81 +399,6 @@ extension AquariumQueryFilter
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'heightMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'heightMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmEqualTo(
-    int? value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'heightMm', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'heightMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'heightMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> heightMmBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'heightMm',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
-    });
-  }
-
   QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -552,81 +462,6 @@ extension AquariumQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(property: r'isActive', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'lengthMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'lengthMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmEqualTo(
-    int? value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'lengthMm', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'lengthMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'lengthMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> lengthMmBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'lengthMm',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
       );
     });
   }
@@ -1072,81 +907,6 @@ extension AquariumQueryFilter
       );
     });
   }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'widthMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'widthMm'),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmEqualTo(
-    int? value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'widthMm', value: value),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmGreaterThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'widthMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmLessThan(
-    int? value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'widthMm',
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterFilterCondition> widthMmBetween(
-    int? lower,
-    int? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'widthMm',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-        ),
-      );
-    });
-  }
 }
 
 extension AquariumQueryObject
@@ -1180,18 +940,6 @@ extension AquariumQuerySortBy on QueryBuilder<Aquarium, Aquarium, QSortBy> {
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByHeightMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heightMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByHeightMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heightMm', Sort.desc);
-    });
-  }
-
   QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByIsActive() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isActive', Sort.asc);
@@ -1201,18 +949,6 @@ extension AquariumQuerySortBy on QueryBuilder<Aquarium, Aquarium, QSortBy> {
   QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByIsActiveDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isActive', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByLengthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lengthMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByLengthMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lengthMm', Sort.desc);
     });
   }
 
@@ -1263,18 +999,6 @@ extension AquariumQuerySortBy on QueryBuilder<Aquarium, Aquarium, QSortBy> {
       return query.addSortBy(r'structure', Sort.desc);
     });
   }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByWidthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'widthMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> sortByWidthMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'widthMm', Sort.desc);
-    });
-  }
 }
 
 extension AquariumQuerySortThenBy
@@ -1303,18 +1027,6 @@ extension AquariumQuerySortThenBy
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByHeightMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heightMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByHeightMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'heightMm', Sort.desc);
-    });
-  }
-
   QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1336,18 +1048,6 @@ extension AquariumQuerySortThenBy
   QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByIsActiveDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isActive', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByLengthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lengthMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByLengthMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lengthMm', Sort.desc);
     });
   }
 
@@ -1398,18 +1098,6 @@ extension AquariumQuerySortThenBy
       return query.addSortBy(r'structure', Sort.desc);
     });
   }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByWidthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'widthMm', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QAfterSortBy> thenByWidthMmDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'widthMm', Sort.desc);
-    });
-  }
 }
 
 extension AquariumQueryWhereDistinct
@@ -1426,21 +1114,9 @@ extension AquariumQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByHeightMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'heightMm');
-    });
-  }
-
   QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByIsActive() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isActive');
-    });
-  }
-
-  QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByLengthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lengthMm');
     });
   }
 
@@ -1471,12 +1147,6 @@ extension AquariumQueryWhereDistinct
       return query.addDistinctBy(r'structure');
     });
   }
-
-  QueryBuilder<Aquarium, Aquarium, QDistinct> distinctByWidthMm() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'widthMm');
-    });
-  }
 }
 
 extension AquariumQueryProperty
@@ -1499,21 +1169,9 @@ extension AquariumQueryProperty
     });
   }
 
-  QueryBuilder<Aquarium, int?, QQueryOperations> heightMmProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'heightMm');
-    });
-  }
-
   QueryBuilder<Aquarium, bool, QQueryOperations> isActiveProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isActive');
-    });
-  }
-
-  QueryBuilder<Aquarium, int?, QQueryOperations> lengthMmProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lengthMm');
     });
   }
 
@@ -1539,12 +1197,6 @@ extension AquariumQueryProperty
   structureProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'structure');
-    });
-  }
-
-  QueryBuilder<Aquarium, int?, QQueryOperations> widthMmProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'widthMm');
     });
   }
 }

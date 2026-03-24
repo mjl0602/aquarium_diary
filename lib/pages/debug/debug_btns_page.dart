@@ -6,7 +6,7 @@ import 'package:aquarium_diary/pages/forms/equipment_form_page.dart';
 import 'package:aquarium_diary/pages/forms/maintenance_record_form_page.dart';
 import 'package:aquarium_diary/pages/forms/schedule_plan_form_page.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/eazyPush.dart';
+import 'package:aquarium_diary/tools/eazy_push.dart';
 import 'package:flutter/material.dart';
 
 class DebugBtnsPage extends StatefulWidget {

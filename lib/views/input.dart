@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aquarium_diary/style/size.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/tools/input_helper.dart';
 import 'package:tapped/tapped.dart';
 
 class StInput extends StatefulWidget {

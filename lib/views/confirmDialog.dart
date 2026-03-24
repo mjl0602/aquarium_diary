@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:aquarium_diary/l10n/generated/l10n.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/tools/input_helper.dart';
 import 'package:aquarium_diary/views/cancelFocus.dart';
 import 'package:aquarium_diary/views/input.dart';
 import 'package:tapped/tapped.dart';

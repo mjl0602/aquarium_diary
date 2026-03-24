@@ -4,7 +4,7 @@ import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/database/models/creature_status_change.dart';
 import 'package:aquarium_diary/database/models/equipment.dart';
 import 'package:aquarium_diary/database/models/maintenance_record.dart';
-import 'package:aquarium_diary/database/models/photo.dart';
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:aquarium_diary/database/models/schedule_plan.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,7 +21,7 @@ abstract class DataBase {
       CreatureStatusChangeSchema,
       EquipmentSchema,
       MaintenanceRecordSchema,
-      PhotoSchema,
+      MediaSchema,
       SchedulePlanSchema,
     ], directory: dir.path);
   }

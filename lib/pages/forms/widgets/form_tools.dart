@@ -2,7 +2,7 @@
 
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/inputHelper.dart';
+import 'package:aquarium_diary/tools/input_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tapped/tapped.dart';

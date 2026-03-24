@@ -60,9 +60,9 @@ const CreatureSchema = CollectionSchema(
       name: r'isFavorite',
       type: IsarType.bool,
     ),
-    r'mainImageId': PropertySchema(
+    r'mainMediaId': PropertySchema(
       id: 8,
-      name: r'mainImageId',
+      name: r'mainMediaId',
       type: IsarType.long,
     ),
     r'nickname': PropertySchema(
@@ -199,7 +199,7 @@ void _creatureSerialize(
   writer.writeDateTime(offsets[5], object.entryDate);
   writer.writeBool(offsets[6], object.isArchived);
   writer.writeBool(offsets[7], object.isFavorite);
-  writer.writeLong(offsets[8], object.mainImageId);
+  writer.writeLong(offsets[8], object.mainMediaId);
   writer.writeString(offsets[9], object.nickname);
   writer.writeString(offsets[10], object.notes);
   writer.writeDouble(offsets[11], object.packagingCost);
@@ -244,7 +244,7 @@ Creature _creatureDeserialize(
     entryDate: reader.readDateTimeOrNull(offsets[5]),
     isArchived: reader.readBoolOrNull(offsets[6]) ?? false,
     isFavorite: reader.readBoolOrNull(offsets[7]) ?? false,
-    mainImageId: reader.readLongOrNull(offsets[8]),
+    mainMediaId: reader.readLongOrNull(offsets[8]),
     nickname: reader.readStringOrNull(offsets[9]),
     notes: reader.readStringOrNull(offsets[10]),
     packagingCost: reader.readDoubleOrNull(offsets[11]),
@@ -966,47 +966,47 @@ extension CreatureQueryFilter
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdIsNull() {
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainMediaIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'mainImageId'),
+        const FilterCondition.isNull(property: r'mainMediaId'),
       );
     });
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageIdIsNotNull() {
+  mainMediaIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'mainImageId'),
+        const FilterCondition.isNotNull(property: r'mainMediaId'),
       );
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdEqualTo(
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainMediaIdEqualTo(
     int? value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'mainImageId', value: value),
+        FilterCondition.equalTo(property: r'mainMediaId', value: value),
       );
     });
   }
 
   QueryBuilder<Creature, Creature, QAfterFilterCondition>
-  mainImageIdGreaterThan(int? value, {bool include = false}) {
+  mainMediaIdGreaterThan(int? value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'mainImageId',
+          property: r'mainMediaId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdLessThan(
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainMediaIdLessThan(
     int? value, {
     bool include = false,
   }) {
@@ -1014,14 +1014,14 @@ extension CreatureQueryFilter
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'mainImageId',
+          property: r'mainMediaId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainImageIdBetween(
+  QueryBuilder<Creature, Creature, QAfterFilterCondition> mainMediaIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1030,7 +1030,7 @@ extension CreatureQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'mainImageId',
+          property: r'mainMediaId',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -3001,15 +3001,15 @@ extension CreatureQuerySortBy on QueryBuilder<Creature, Creature, QSortBy> {
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainImageId() {
+  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainMediaId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mainImageId', Sort.asc);
+      return query.addSortBy(r'mainMediaId', Sort.asc);
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainImageIdDesc() {
+  QueryBuilder<Creature, Creature, QAfterSortBy> sortByMainMediaIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mainImageId', Sort.desc);
+      return query.addSortBy(r'mainMediaId', Sort.desc);
     });
   }
 
@@ -3318,15 +3318,15 @@ extension CreatureQuerySortThenBy
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainImageId() {
+  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainMediaId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mainImageId', Sort.asc);
+      return query.addSortBy(r'mainMediaId', Sort.asc);
     });
   }
 
-  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainImageIdDesc() {
+  QueryBuilder<Creature, Creature, QAfterSortBy> thenByMainMediaIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'mainImageId', Sort.desc);
+      return query.addSortBy(r'mainMediaId', Sort.desc);
     });
   }
 
@@ -3574,9 +3574,9 @@ extension CreatureQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Creature, Creature, QDistinct> distinctByMainImageId() {
+  QueryBuilder<Creature, Creature, QDistinct> distinctByMainMediaId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'mainImageId');
+      return query.addDistinctBy(r'mainMediaId');
     });
   }
 
@@ -3752,9 +3752,9 @@ extension CreatureQueryProperty
     });
   }
 
-  QueryBuilder<Creature, int?, QQueryOperations> mainImageIdProperty() {
+  QueryBuilder<Creature, int?, QQueryOperations> mainMediaIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'mainImageId');
+      return query.addPropertyName(r'mainMediaId');
     });
   }
 

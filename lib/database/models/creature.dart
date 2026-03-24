@@ -1,5 +1,6 @@
 // lib/models/creature.dart
 
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:isar_community/isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 
@@ -28,7 +29,8 @@ class Creature {
   @enumerated
   CoralCompatibility coralCompatibility;
 
-  int? mainImageId;
+  /// 主媒体 ID（关联 Media 表的主键）
+  int? mainMediaId;
 
   DateTime? entryDate;
 
@@ -74,6 +76,10 @@ class Creature {
 
   String? notes;
 
+  /// 关联的媒体列表（非持久化，通过查询获取）
+  @ignore
+  List<Media>? mediaList;
+
   Creature({
     this.aquariumId,
     required this.category,
@@ -83,7 +89,7 @@ class Creature {
     this.sizeCm,
     this.aggressiveness = Aggressiveness.peaceful,
     required this.coralCompatibility,
-    this.mainImageId,
+    this.mainMediaId,
     this.entryDate,
     this.quarantineEndDate,
     required this.statusType,
@@ -100,6 +106,7 @@ class Creature {
     required this.createdAt,
     required this.updatedAt,
     this.notes,
+    this.mediaList,
   });
 
   factory Creature.fromJson(Map<String, dynamic> json) {
@@ -118,7 +125,7 @@ class Creature {
               json['coralCompatibility'] as String,
             )
           : CoralCompatibility.safe,
-      mainImageId: json['mainImageId'] as int?,
+      mainMediaId: json['mainMediaId'] as int?,
       entryDate: json['entryDate'] != null
           ? DateTime.parse(json['entryDate'] as String)
           : null,
@@ -157,7 +164,7 @@ class Creature {
       'sizeCm': sizeCm,
       'aggressiveness': aggressiveness.name,
       'coralCompatibility': coralCompatibility?.name,
-      'mainImageId': mainImageId,
+      'mainMediaId': mainMediaId,
       'entryDate': entryDate?.toIso8601String(),
       'quarantineEndDate': quarantineEndDate?.toIso8601String(),
       'statusType': statusType.name,
@@ -180,6 +187,6 @@ class Creature {
 
   @override
   String toString() {
-    return 'Creature{id: $id, speciesName: $speciesName, category: ${category.label}, status: ${statusType.label}}';
+    return 'Creature{id: $id, speciesName: $speciesName, category: ${category.label}, status: ${statusType.label}, mainMediaId: $mainMediaId}';
   }
 }

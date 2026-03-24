@@ -23,7 +23,7 @@ UI代码风格：
 4. 不使用任何其他的状态管理框架
 5. 如果需要储存本地数据，你使用isar数据库，每个数据类按实际使用情况，自己提供快捷的增删插改和筛选方法，枚举使用dart的高级枚举，枚举使用数字或者英文key，通过getter获取中文文本。每个数据提供可读性好的toString方法
 6. 可以使用UserDefault.xxx.value保存和读取UserDefault，你不需要实现UserDefault，请直接使用
-7. 可以使用Api.http获取dio示例发送网络请求，你不需要实现Api.http，请直接使用
+7. 可以使用Api.http获取dio示例发送网络请求，你不需要实现Api.http，请直接使用Api.http.get等发出请求
 
 ## 工作顺序
 
