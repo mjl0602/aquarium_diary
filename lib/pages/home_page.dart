@@ -7,6 +7,7 @@ import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/database/models/equipment.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
 import 'package:aquarium_diary/pages/debug/debug_btns_page.dart';
+import 'package:aquarium_diary/pages/details/creature_detail_page.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
 import 'package:aquarium_diary/pages/forms/creature_form_page.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
@@ -18,6 +19,7 @@ import 'package:aquarium_diary/views/blankListHintView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar_community/isar.dart';
+import 'package:left_scroll_actions/left_scroll_actions.dart';
 import 'package:tapped/tapped.dart';
 
 class HomePage extends StatefulWidget {
@@ -158,6 +160,39 @@ class _HomePageState extends State<HomePage>
     final toolbarHeight = kToolbarHeight + topPadding;
     final expandedHeight = cardHeight + toolbarHeight;
 
+    var noCreatureView = Container(
+      margin: EdgeInsets.symmetric(horizontal: 32),
+      child: Column(
+        spacing: 20,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          StText.small('后续可从右上角添加生物'),
+          Tapped(
+            onTap: () async {
+              final targetItem = await CreatureFormPage.add(
+                context,
+                homeAquarium!.id,
+              );
+              if (targetItem == null) return;
+              loadHomePageAqua();
+            },
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: StColor.primary,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: StText.medium(
+                  '+ 添加生物',
+                  style: const TextStyle(color: StColor.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: NestedScrollView(
@@ -233,50 +268,24 @@ class _HomePageState extends State<HomePage>
           children: [
             BlankListHintView(
               isBlank: creatureList.isEmpty,
-              replacement: Container(
-                margin: EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  spacing: 20,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    StText.small('后续可从右上角添加生物'),
-                    Tapped(
-                      onTap: () async {
-                        final targetItem = await CreatureFormPage.add(
-                          context,
-                          homeAquarium!.id,
-                        );
-                        if (targetItem == null) return;
-                        loadHomePageAqua();
-                      },
-                      child: Container(
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: StColor.primary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: StText.medium(
-                            '+ 添加生物',
-                            style: const TextStyle(color: StColor.white),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              replacement: noCreatureView,
               child: ListView.builder(
                 padding: const EdgeInsets.all(12),
                 itemCount: creatureList.length,
                 itemBuilder: (context, index) {
                   final creature = creatureList[index];
                   return ListItemCard(
+                    id: index,
                     icon: Icons.pets,
                     title: creature.nickname ?? creature.speciesName,
                     subtitle:
                         '状态: ${creature.statusType.label}  •  入缸 ${creature.daysSinceSetup}天',
-                    trailing: '❤️',
+                    // trailing: '❤️',
+                    onTap: () {
+                      CreatureDetailPage(
+                        creature: creature,
+                      ).pushAsPage(context);
+                    },
                   );
                 },
               ),
@@ -386,10 +395,13 @@ class AquariumCard extends StatelessWidget {
 // ...
 // 通用列表项卡片
 class ListItemCard extends StatelessWidget {
+  final int id;
   final IconData icon;
   final String title;
   final String subtitle;
   final String? trailing;
+  final Function? onTap;
+  final Function? onRemove;
 
   const ListItemCard({
     Key? key,
@@ -397,39 +409,65 @@ class ListItemCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.trailing,
+    required this.id,
+    this.onTap,
+    this.onRemove,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: StColor.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+      child: CupertinoLeftScroll(
+        key: ValueKey(id),
+        closeTag: LeftScrollCloseTag('home_list'),
+        onTap: () => onTap?.call(),
+        opacityChange: true,
+        buttons: [
+          Tapped(
+            onTap: onTap,
+            child: Container(
+              margin: EdgeInsets.all(4),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: StColor.error,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text('删除', style: TextStyle(color: Colors.white)),
+            ),
           ),
+          // LeftScrollItem(color: StColor.error, text: '删除', onTap: onRemove),
         ],
-      ),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: StColor.lightGray,
-          child: Icon(icon, color: StColor.primary, size: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            color: StColor.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: StColor.lightGray,
+              child: Icon(icon, color: StColor.primary, size: 20),
+            ),
+            title: StText.medium(title),
+            subtitle: StText.small(
+              subtitle,
+              style: const TextStyle(color: StColor.gray),
+            ),
+            trailing: trailing != null
+                ? StText.medium(
+                    trailing!,
+                    style: const TextStyle(color: StColor.primary),
+                  )
+                : null,
+          ),
         ),
-        title: StText.medium(title),
-        subtitle: StText.small(
-          subtitle,
-          style: const TextStyle(color: StColor.gray),
-        ),
-        trailing: trailing != null
-            ? StText.medium(
-                trailing!,
-                style: const TextStyle(color: StColor.primary),
-              )
-            : null,
       ),
     );
   }
@@ -445,7 +483,8 @@ class EquipmentList extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       itemCount: 6,
       itemBuilder: (context, index) {
-        return const ListItemCard(
+        return ListItemCard(
+          id: index,
           icon: Icons.devices,
           title: '水泵',
           subtitle: '功率 25W  •  正常使用',
@@ -466,7 +505,8 @@ class ConsumableList extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       itemCount: 5,
       itemBuilder: (context, index) {
-        return const ListItemCard(
+        return ListItemCard(
+          id: index,
           icon: Icons.inventory,
           title: '鱼粮',
           subtitle: '剩余 200g  •  可用约30天',
@@ -487,7 +527,8 @@ class MaintenanceList extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       itemCount: 7,
       itemBuilder: (context, index) {
-        return const ListItemCard(
+        return ListItemCard(
+          id: index,
           icon: Icons.build,
           title: '换水',
           subtitle: '昨天 · 下次提醒 3天后',

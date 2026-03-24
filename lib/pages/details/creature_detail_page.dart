@@ -1,4 +1,5 @@
 import 'package:aquarium_diary/database/models/media.dart';
+import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/views/mediaView.dart';
 import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
@@ -7,6 +8,7 @@ import 'package:aquarium_diary/database/models/creature.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:aquarium_diary/pages/forms/creature_form_page.dart';
+import 'package:tapped/tapped.dart';
 
 class CreatureDetailPage extends StatefulWidget {
   final Creature creature;
@@ -21,11 +23,44 @@ class CreatureDetailPage extends StatefulWidget {
 class _CreatureDetailPageState extends State<CreatureDetailPage> {
   late Future<List<Media>> _mediaListFuture;
   late Future<Media?> _mainMediaFuture;
+  late ScrollController _scrollController;
+
+  // 用于通知标题颜色变化的 ValueNotifier
+  final ValueNotifier<Color> _titleColorNotifier = ValueNotifier(Colors.white);
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_updateTitleColor);
     _loadMedia();
+  }
+
+  // 根据偏移量更新颜色
+  void _updateTitleColor() {
+    final offset = _scrollController.offset;
+    final maxExtent = _maxScrollExtent;
+    if (maxExtent <= 0) return;
+
+    // 计算滚动比例 (0 = 完全展开, 1 = 完全收起)
+    final t = (offset / maxExtent).clamp(0.0, 1.0);
+    // 插值颜色：白色 -> 深灰色 (可根据需要调整)
+    final newColor = Color.lerp(Colors.white, StColor.darkGray, t)!;
+    if (_titleColorNotifier.value != newColor) {
+      _titleColorNotifier.value = newColor;
+    }
+  }
+
+  double get headerAspectRatio => 12 / 16;
+
+  // 标题最大滚动距离
+  double get _maxScrollExtent {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardHeight = screenWidth * headerAspectRatio;
+    final topPadding = MediaQuery.of(context).padding.top;
+    final toolbarHeight = kToolbarHeight + topPadding;
+    final expandedHeight = cardHeight + toolbarHeight;
+    return expandedHeight - kToolbarHeight;
   }
 
   void _loadMedia() {
@@ -43,6 +78,8 @@ class _CreatureDetailPageState extends State<CreatureDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardHeight = screenWidth * headerAspectRatio;
     return Scaffold(
       body: FutureBuilder<List<Media>>(
         future: _mediaListFuture,
@@ -56,50 +93,74 @@ class _CreatureDetailPageState extends State<CreatureDetailPage> {
               .toList();
 
           return CustomScrollView(
+            controller: _scrollController,
             slivers: [
-              SliverAppBar(
-                expandedHeight: 300,
-                floating: true,
-                pinned: true,
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
-                elevation: 0,
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              CreatureFormPage(creature: widget.creature),
+              ValueListenableBuilder<Color>(
+                valueListenable: _titleColorNotifier,
+                builder: (context, color, _) {
+                  return SliverAppBar(
+                    expandedHeight: 300,
+                    floating: true,
+                    pinned: true,
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    elevation: 0,
+                    centerTitle: false,
+                    leading: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: _titleColorNotifier.value,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    title: StText.big(
+                      widget.creature.speciesName,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    actions: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: color),
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CreatureFormPage(creature: widget.creature),
+                            ),
+                          );
+                          if (result is Creature && mounted) {
+                            setState(() {
+                              widget.creature..id = result.id;
+                              _loadMedia();
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Container(
+                        height: cardHeight,
+                        child: FutureBuilder<Media?>(
+                          future: _mainMediaFuture,
+                          builder: (context, mainMediaSnapshot) {
+                            if (!mainMediaSnapshot.hasData) {
+                              return Image.asset(
+                                R.aqTestMainImg,
+                                fit: BoxFit.fitWidth,
+                              );
+                              return Container(color: StColor.lightGray);
+                            }
+                            return HeaderMedia(media: mainMediaSnapshot.data);
+                          },
                         ),
-                      );
-                      if (result is Creature && mounted) {
-                        setState(() {
-                          widget.creature..id = result.id;
-                          _loadMedia();
-                        });
-                      }
-                    },
-                  ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: FutureBuilder<Media?>(
-                    future: _mainMediaFuture,
-                    builder: (context, mainMediaSnapshot) {
-                      if (!mainMediaSnapshot.hasData) {
-                        return Container(color: StColor.lightGray);
-                      }
-                      return HeaderMedia(media: mainMediaSnapshot.data);
-                    },
-                  ),
-                  collapseMode: CollapseMode.parallax,
-                ),
+                      ),
+                      collapseMode: CollapseMode.parallax,
+                    ),
+                  );
+                },
               ),
               SliverToBoxAdapter(
                 child: Container(
@@ -173,7 +234,7 @@ class _CreatureDetailPageState extends State<CreatureDetailPage> {
                   child: MediaGrid(medias: galleryMedias),
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 20)),
+              const SliverToBoxAdapter(child: SizedBox(height: 700)),
             ],
           );
         },
