@@ -1,5 +1,4 @@
 import 'package:aquarium_diary/database/enums.dart';
-import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
 
 part 'aquarium.g.dart';

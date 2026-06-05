@@ -3,7 +3,6 @@
 import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
-import 'package:aquarium_diary/global/userDefault.dart';
 import 'package:aquarium_diary/pages/forms/widgets/form_tools.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';

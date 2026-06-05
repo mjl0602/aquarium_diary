@@ -1,23 +1,16 @@
 // lib/pages/home_page.dart
 
 import 'package:aquarium_diary/database/_isar.dart';
-import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
-import 'package:aquarium_diary/database/models/creature.dart';
-import 'package:aquarium_diary/database/models/equipment.dart';
+import 'package:aquarium_diary/database/models/record.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
-import 'package:aquarium_diary/pages/debug/debug_btns_page.dart';
-import 'package:aquarium_diary/pages/details/creature_detail_page.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
-import 'package:aquarium_diary/pages/forms/creature_form_page.dart';
+import 'package:aquarium_diary/pages/record_card.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
-import 'package:aquarium_diary/tools/eazy_push.dart';
-import 'package:aquarium_diary/views/blankListHintView.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:isar_community/isar.dart';
 import 'package:left_scroll_actions/left_scroll_actions.dart';
 import 'package:tapped/tapped.dart';
@@ -31,7 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController = TabController(length: 3, vsync: this);
+  late TabController _tabController = TabController(length: 2, vsync: this);
   late ScrollController _scrollController;
 
   double get headerAspectRatio => 12 / 16;
@@ -40,23 +33,59 @@ class _HomePageState extends State<HomePage>
   final ValueNotifier<Color> _titleColorNotifier = ValueNotifier(Colors.white);
 
   Aquarium? homeAquarium;
-  List<Creature> creatureList = [];
-  List<Equipment> equipmentList = [];
+
+  // 记录相关状态
+  List<Record> _records = [];
+  bool _recordsLoading = true;
 
   loadHomePageAqua() async {
     final id = UserDefault.homePageAQ.value;
     if (id == null) return;
     homeAquarium = await isar.aquariums.get(id);
-    creatureList = await isar.creatures
-        .filter()
-        .aquariumIdEqualTo(homeAquarium!.id)
-        .findAll();
-    equipmentList = await isar.equipments
-        .filter()
-        .aquariumIdEqualTo(homeAquarium!.id)
-        .findAll();
-
     setState(() {});
+  }
+
+  Future<void> _loadRecords() async {
+    setState(() => _recordsLoading = true);
+
+    try {
+      // 加载记录
+      List<Record> records;
+
+      if (homeAquarium?.id != null) {
+        // 过滤特定鱼缸的记录
+        records = await isar.records
+            .filter()
+            .aquariumIdEqualTo(homeAquarium!.id)
+            .findAll();
+      } else {
+        // 加载所有记录
+        records = await isar.records.where().findAll();
+      }
+
+      // 按记录时间排序
+      records.sort((a, b) => b.recordTime.compareTo(a.recordTime));
+      _records = records;
+    } catch (e) {
+      print('加载记录失败: $e');
+      _records = [];
+    } finally {
+      setState(() => _recordsLoading = false);
+    }
+  }
+
+  Future<void> _refreshRecords() async {
+    await _loadRecords();
+  }
+
+  void _showRecordDetails(Record record) {
+    // TODO: 实现记录详情显示
+    print('显示记录详情: ${record.name}');
+  }
+
+  void _showRecordActions(Record record) {
+    // TODO: 实现记录操作菜单
+    print('显示记录操作: ${record.name}');
   }
 
   // 模拟总价格和开缸天数（实际应计算得出）
@@ -80,6 +109,7 @@ class _HomePageState extends State<HomePage>
     _scrollController = ScrollController();
     _scrollController.addListener(_updateTitleColor);
     loadHomePageAqua();
+    _loadRecords();
   }
 
   // 根据偏移量更新颜色
@@ -115,6 +145,262 @@ class _HomePageState extends State<HomePage>
     return expandedHeight - kToolbarHeight;
   }
 
+  // 构建详情tab
+  Widget _buildDetailTab() {
+    if (homeAquarium == null) {
+      return const Center(child: Text('请先选择鱼缸'));
+    }
+
+    final aquarium = homeAquarium!;
+    final waterCapacity = aquarium.capacityLiter ?? 0.0;
+    final days = aquarium.daysSinceSetup;
+    final startDate = aquarium.startDate;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 基本信息卡片
+          Container(
+            decoration: BoxDecoration(
+              color: StColor.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StText.medium(
+                  '基本信息',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: StColor.darkGray,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow('鱼缸名称', aquarium.name),
+                _buildInfoRow('鱼缸结构', aquarium.structure.label),
+                if (startDate != null)
+                  _buildInfoRow(
+                    '开缸时间',
+                    '${startDate.year}-${startDate.month}-${startDate.day}',
+                  ),
+                _buildInfoRow('开缸天数', '$days 天'),
+                if (waterCapacity > 0)
+                  _buildInfoRow('水体容量', '${waterCapacity.toStringAsFixed(1)}L'),
+                if (aquarium.notes != null && aquarium.notes!.isNotEmpty)
+                  _buildInfoRow('备注', aquarium.notes!),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // 统计信息卡片
+          Container(
+            decoration: BoxDecoration(
+              color: StColor.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StText.medium(
+                  '统计信息',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: StColor.darkGray,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // 这里可以添加记录统计信息
+                _buildStatCard(
+                  '总记录数',
+                  '0', // TODO: 从数据库获取
+                  Icons.note_add,
+                  Colors.blue,
+                ),
+                const SizedBox(height: 12),
+                _buildStatCard(
+                  '维护记录',
+                  '0', // TODO: 从数据库获取
+                  Icons.build,
+                  Colors.green,
+                ),
+                const SizedBox(height: 12),
+                _buildStatCard(
+                  '水质测试',
+                  '0', // TODO: 从数据库获取
+                  Icons.science,
+                  Colors.purple,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // 快速操作
+          Container(
+            decoration: BoxDecoration(
+              color: StColor.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                StText.medium(
+                  '快速操作',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: StColor.darkGray,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _buildQuickAction(
+                      '添加记录',
+                      Icons.note_add,
+                      StColor.primary,
+                      () {
+                        // TODO: 跳转到添加记录页面
+                      },
+                    ),
+                    _buildQuickAction('水质测试', Icons.science, Colors.purple, () {
+                      // TODO: 跳转到水质测试页面
+                    }),
+                    _buildQuickAction('维护记录', Icons.build, Colors.green, () {
+                      // TODO: 跳转到维护页面
+                    }),
+                    _buildQuickAction('编辑鱼缸', Icons.edit, Colors.orange, () {
+                      // TODO: 跳转到编辑鱼缸页面
+                    }),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: StText.small(label, style: TextStyle(color: StColor.gray)),
+          ),
+          Expanded(
+            flex: 2,
+            child: StText.small(
+              value,
+              style: const TextStyle(
+                color: StColor.darkGray,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(icon, size: 20, color: color),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StText.small(title, style: TextStyle(color: StColor.gray)),
+              StText.medium(
+                value,
+                style: TextStyle(color: color, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickAction(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return Tapped(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: 8),
+            StText.small(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (homeAquarium == null) {
@@ -122,7 +408,6 @@ class _HomePageState extends State<HomePage>
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
-            spacing: 20,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               StText.big('鱼缸日记'),
@@ -159,40 +444,6 @@ class _HomePageState extends State<HomePage>
     final topPadding = MediaQuery.of(context).padding.top;
     final toolbarHeight = kToolbarHeight + topPadding;
     final expandedHeight = cardHeight + toolbarHeight;
-
-    var noCreatureView = Container(
-      margin: EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        spacing: 20,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          StText.small('后续可从右上角添加生物'),
-          Tapped(
-            onTap: () async {
-              final targetItem = await CreatureFormPage.add(
-                context,
-                homeAquarium!.id,
-              );
-              if (targetItem == null) return;
-              loadHomePageAqua();
-            },
-            child: Container(
-              height: 48,
-              decoration: BoxDecoration(
-                color: StColor.primary,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: StText.medium(
-                  '+ 添加生物',
-                  style: const TextStyle(color: StColor.white),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: NestedScrollView(
@@ -219,17 +470,7 @@ class _HomePageState extends State<HomePage>
                   );
                 },
               ),
-              actions: [
-                Tapped(
-                  onTap: () {
-                    DebugBtnsPage().pushAsPage(context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    child: Icon(Icons.add, color: StColor.white),
-                  ),
-                ),
-              ],
+              actions: [],
               backgroundColor: StColor.lightGray,
               foregroundColor: StColor.darkGray,
               elevation: 0,
@@ -251,10 +492,8 @@ class _HomePageState extends State<HomePage>
                   indicatorColor: StColor.primary,
                   indicatorWeight: 3,
                   tabs: const [
-                    // Tab(text: '记录'),
-                    Tab(text: '生物'),
-                    Tab(text: '设备'),
-                    Tab(text: '维护'),
+                    Tab(text: '详情'),
+                    Tab(text: '记录'),
                   ],
                 ),
                 48.0,
@@ -266,33 +505,14 @@ class _HomePageState extends State<HomePage>
         body: TabBarView(
           controller: _tabController,
           children: [
-            BlankListHintView(
-              isBlank: creatureList.isEmpty,
-              replacement: noCreatureView,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(12),
-                itemCount: creatureList.length,
-                itemBuilder: (context, index) {
-                  final creature = creatureList[index];
-                  return ListItemCard(
-                    id: index,
-                    icon: Icons.pets,
-                    title: creature.nickname ?? creature.speciesName,
-                    subtitle:
-                        '状态: ${creature.statusType.label}  •  入缸 ${creature.daysSinceSetup}天',
-                    // trailing: '❤️',
-                    onTap: () {
-                      CreatureDetailPage(
-                        creature: creature,
-                      ).pushAsPage(context);
-                    },
-                  );
-                },
-              ),
+            _buildDetailTab(),
+            RecordCard(
+              aquariumId: homeAquarium?.id,
+              records: _records,
+              isLoading: _recordsLoading,
+              onRecordTapped: _showRecordDetails,
+              onRecordLongPressed: _showRecordActions,
             ),
-            EquipmentList(),
-            // ConsumableList(),
-            MaintenanceList(),
           ],
         ),
       ),
@@ -469,72 +689,6 @@ class ListItemCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-// 设备列表
-class EquipmentList extends StatelessWidget {
-  const EquipmentList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: 6,
-      itemBuilder: (context, index) {
-        return ListItemCard(
-          id: index,
-          icon: Icons.devices,
-          title: '水泵',
-          subtitle: '功率 25W  •  正常使用',
-          trailing: '⚡',
-        );
-      },
-    );
-  }
-}
-
-// 耗材列表
-class ConsumableList extends StatelessWidget {
-  const ConsumableList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return ListItemCard(
-          id: index,
-          icon: Icons.inventory,
-          title: '鱼粮',
-          subtitle: '剩余 200g  •  可用约30天',
-          trailing: '🔄',
-        );
-      },
-    );
-  }
-}
-
-// 维护列表
-class MaintenanceList extends StatelessWidget {
-  const MaintenanceList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: 7,
-      itemBuilder: (context, index) {
-        return ListItemCard(
-          id: index,
-          icon: Icons.build,
-          title: '换水',
-          subtitle: '昨天 · 下次提醒 3天后',
-          trailing: '⏰',
-        );
-      },
     );
   }
 }
