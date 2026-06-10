@@ -1059,6 +1059,9 @@ class _RecordFormPageState extends State<RecordFormPage> {
         child: SafeArea(
           child: Container(
             color: StColor.lightGray,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
