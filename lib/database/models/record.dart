@@ -16,8 +16,8 @@ class Record {
   @enumerated
   late RecordType recordType;
 
-  /// 关联的对象ID（根据recordType决定）
-  int? relatedId;
+  /// 关联创建时的记录ID（在记录生物变化等情况时使用）
+  int? sourceId;
 
   /// 操作类型
   @enumerated
@@ -53,7 +53,7 @@ class Record {
   Record({
     this.aquariumId,
     required this.recordType,
-    this.relatedId,
+    this.sourceId,
     required this.operationType,
     this.photoMediaIds,
     this.iconPath,
@@ -72,7 +72,7 @@ class Record {
     return Record(
       aquariumId: json['aquariumId'] as int?,
       recordType: RecordType.values.byName(json['recordType'] as String),
-      relatedId: json['relatedId'] as int?,
+      sourceId: json['sourceId'] as int?,
       operationType: OperationType.values.byName(
         json['operationType'] as String,
       ),
@@ -95,7 +95,7 @@ class Record {
       'id': id,
       'aquariumId': aquariumId,
       'recordType': recordType.name,
-      'relatedId': relatedId,
+      'sourceId': sourceId,
       'operationType': operationType.name,
       'photoMediaIds': photoMediaIds,
       'iconPath': iconPath,
@@ -137,8 +137,8 @@ class Record {
       buffer.writeln('关联鱼缸ID: $aquariumId');
     }
 
-    if (relatedId != null) {
-      buffer.writeln('关联对象ID: $relatedId');
+    if (sourceId != null) {
+      buffer.writeln('关联对象ID: $sourceId');
     }
 
     if (valueType != null && numericValue != null) {
@@ -176,7 +176,7 @@ class Record {
     return Record(
       aquariumId: aquariumId,
       recordType: RecordType.aquarium,
-      relatedId: aquariumId,
+      sourceId: aquariumId,
       operationType: operationType,
       photoMediaIds: photoMediaIds,
       iconPath: iconPath,
@@ -207,7 +207,7 @@ class Record {
     return Record(
       aquariumId: aquariumId,
       recordType: RecordType.creature,
-      relatedId: creatureId,
+      sourceId: creatureId,
       operationType: operationType,
       photoMediaIds: photoMediaIds,
       iconPath: iconPath,
@@ -238,7 +238,7 @@ class Record {
     return Record(
       aquariumId: aquariumId,
       recordType: RecordType.equipment,
-      relatedId: equipmentId,
+      sourceId: equipmentId,
       operationType: operationType,
       photoMediaIds: photoMediaIds,
       iconPath: iconPath,
@@ -269,7 +269,7 @@ class Record {
     return Record(
       aquariumId: aquariumId,
       recordType: RecordType.maintenance,
-      relatedId: maintenanceId,
+      sourceId: maintenanceId,
       operationType: operationType,
       photoMediaIds: photoMediaIds,
       iconPath: iconPath,

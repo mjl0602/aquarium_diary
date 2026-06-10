@@ -71,11 +71,7 @@ const RecordSchema = CollectionSchema(
       type: IsarType.byte,
       enumMap: _RecordrecordTypeEnumValueMap,
     ),
-    r'relatedId': PropertySchema(
-      id: 12,
-      name: r'relatedId',
-      type: IsarType.long,
-    ),
+    r'sourceId': PropertySchema(id: 12, name: r'sourceId', type: IsarType.long),
     r'summary': PropertySchema(id: 13, name: r'summary', type: IsarType.string),
     r'valueType': PropertySchema(
       id: 14,
@@ -159,7 +155,7 @@ void _recordSerialize(
   writer.writeLongList(offsets[9], object.photoMediaIds);
   writer.writeDateTime(offsets[10], object.recordTime);
   writer.writeByte(offsets[11], object.recordType.index);
-  writer.writeLong(offsets[12], object.relatedId);
+  writer.writeLong(offsets[12], object.sourceId);
   writer.writeString(offsets[13], object.summary);
   writer.writeString(offsets[14], object.valueType);
 }
@@ -186,7 +182,7 @@ Record _recordDeserialize(
     recordType:
         _RecordrecordTypeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
         RecordType.aquarium,
-    relatedId: reader.readLongOrNull(offsets[12]),
+    sourceId: reader.readLongOrNull(offsets[12]),
     valueType: reader.readStringOrNull(offsets[14]),
   );
   object.id = id;
@@ -1712,33 +1708,33 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdIsNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'relatedId'),
+        const FilterCondition.isNull(property: r'sourceId'),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdIsNotNull() {
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'relatedId'),
+        const FilterCondition.isNotNull(property: r'sourceId'),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdEqualTo(
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdEqualTo(
     int? value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'relatedId', value: value),
+        FilterCondition.equalTo(property: r'sourceId', value: value),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdGreaterThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdGreaterThan(
     int? value, {
     bool include = false,
   }) {
@@ -1746,14 +1742,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'relatedId',
+          property: r'sourceId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdLessThan(
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdLessThan(
     int? value, {
     bool include = false,
   }) {
@@ -1761,14 +1757,14 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'relatedId',
+          property: r'sourceId',
           value: value,
         ),
       );
     });
   }
 
-  QueryBuilder<Record, Record, QAfterFilterCondition> relatedIdBetween(
+  QueryBuilder<Record, Record, QAfterFilterCondition> sourceIdBetween(
     int? lower,
     int? upper, {
     bool includeLower = true,
@@ -1777,7 +1773,7 @@ extension RecordQueryFilter on QueryBuilder<Record, Record, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'relatedId',
+          property: r'sourceId',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -2233,15 +2229,15 @@ extension RecordQuerySortBy on QueryBuilder<Record, Record, QSortBy> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterSortBy> sortByRelatedId() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortBySourceId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relatedId', Sort.asc);
+      return query.addSortBy(r'sourceId', Sort.asc);
     });
   }
 
-  QueryBuilder<Record, Record, QAfterSortBy> sortByRelatedIdDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> sortBySourceIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relatedId', Sort.desc);
+      return query.addSortBy(r'sourceId', Sort.desc);
     });
   }
 
@@ -2415,15 +2411,15 @@ extension RecordQuerySortThenBy on QueryBuilder<Record, Record, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Record, Record, QAfterSortBy> thenByRelatedId() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenBySourceId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relatedId', Sort.asc);
+      return query.addSortBy(r'sourceId', Sort.asc);
     });
   }
 
-  QueryBuilder<Record, Record, QAfterSortBy> thenByRelatedIdDesc() {
+  QueryBuilder<Record, Record, QAfterSortBy> thenBySourceIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'relatedId', Sort.desc);
+      return query.addSortBy(r'sourceId', Sort.desc);
     });
   }
 
@@ -2535,9 +2531,9 @@ extension RecordQueryWhereDistinct on QueryBuilder<Record, Record, QDistinct> {
     });
   }
 
-  QueryBuilder<Record, Record, QDistinct> distinctByRelatedId() {
+  QueryBuilder<Record, Record, QDistinct> distinctBySourceId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'relatedId');
+      return query.addDistinctBy(r'sourceId');
     });
   }
 
@@ -2638,9 +2634,9 @@ extension RecordQueryProperty on QueryBuilder<Record, Record, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Record, int?, QQueryOperations> relatedIdProperty() {
+  QueryBuilder<Record, int?, QQueryOperations> sourceIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'relatedId');
+      return query.addPropertyName(r'sourceId');
     });
   }
 
