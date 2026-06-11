@@ -37,16 +37,26 @@ class RecordFormPage extends StatefulWidget {
   // 生物状态变化
   // 设备状态变化
   static Future<Record?> add(BuildContext context, {int? aquariumId}) async {
-    final targetItem = await RecordFormPage(
-      aquariumId: aquariumId,
-    ).pushAsPage<Record>(context);
-    if (targetItem is! Record) return null;
+    // TODO: 需要替换为新的表单页面系统
+    // final targetItem = await RecordFormPage(
+    //   aquariumId: aquariumId,
+    // ).pushAsPage<Record>(context);
+    // if (targetItem is! Record) return null;
+    //
+    // await isar.writeTxn(() async {
+    //   final id = await isar.records.put(targetItem);
+    //   targetItem.id = id;
+    // });
+    // return targetItem;
 
-    await isar.writeTxn(() async {
-      final id = await isar.records.put(targetItem);
-      targetItem.id = id;
-    });
-    return targetItem;
+    // 暂时返回null，因为已经被拆分
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('此功能已被拆分，请使用具体的表单页面'),
+        // duration: const Duration(seconds: WithDuration.short),
+      ),
+    );
+    return null;
   }
 
   // 创建换水记录
@@ -275,38 +285,58 @@ class RecordFormPage extends StatefulWidget {
 
     if (isBottomSheet) {
       // Bottom Sheet模式：使用pushAsActionSheet
-      final result = await RecordFormPage(
-        record: preconfiguredRecord,
-        aquariumId: aquariumId,
-        formType: formType,
-        onSave: (savedRecord) {
-          // 关闭bottom sheet并返回结果
-          Navigator.of(context).pop(savedRecord);
-        },
-      ).pushAsActionSheet<Record?>(context);
+      // TODO: 需要替换为新的表单页面系统
+      // final result = await RecordFormPage(
+      //   record: preconfiguredRecord,
+      //   aquariumId: aquariumId,
+      //   formType: formType,
+      //   onSave: (savedRecord) {
+      //     // 关闭bottom sheet并返回结果
+      //     Navigator.of(context).pop(savedRecord);
+      //   },
+      // ).pushAsActionSheet<Record?>(context);
+      //
+      // if (result != null) {
+      //   await isar.writeTxn(() async {
+      //     final id = await isar.records.put(result);
+      //     result.id = id;
+      //   });
+      // }
+      // return result;
 
-      if (result != null) {
-        await isar.writeTxn(() async {
-          final id = await isar.records.put(result);
-          result.id = id;
-        });
-      }
-      return result;
+      // 暂时返回null，因为已经被拆分
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('此功能已被拆分，请使用具体的表单页面'),
+          // duration: const Duration(seconds: WithDuration.short),
+        ),
+      );
+      return null;
     } else {
       // 页面模式：正常页面跳转
-      final targetItem = await RecordFormPage(
-        record: preconfiguredRecord,
-        aquariumId: aquariumId,
-        formType: formType,
-      ).pushAsPage<Record>(context);
+      // TODO: 需要替换为新的表单页面系统
+      // final targetItem = await RecordFormPage(
+      //   record: preconfiguredRecord,
+      //   aquariumId: aquariumId,
+      //   formType: formType,
+      // ).pushAsPage<Record>(context);
+      //
+      // if (targetItem is! Record) return null;
+      //
+      // await isar.writeTxn(() async {
+      //   final id = await isar.records.put(targetItem);
+      //   targetItem.id = id;
+      // });
+      // return targetItem;
 
-      if (targetItem is! Record) return null;
-
-      await isar.writeTxn(() async {
-        final id = await isar.records.put(targetItem);
-        targetItem.id = id;
-      });
-      return targetItem;
+      // 暂时返回null，因为已经被拆分
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('此功能已被拆分，请使用具体的表单页面'),
+          // duration: const Duration(seconds: WithDuration.short),
+        ),
+      );
+      return null;
     }
   }
 

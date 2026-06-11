@@ -5,7 +5,13 @@ import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/record.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
-import 'package:aquarium_diary/pages/forms/record_form_page.dart';
+import 'package:aquarium_diary/pages/forms/water_change_form_page.dart';
+import 'package:aquarium_diary/pages/forms/feeding_form_page.dart';
+import 'package:aquarium_diary/pages/forms/water_quality_test_form_page.dart';
+import 'package:aquarium_diary/pages/forms/new_creature_form_page.dart';
+import 'package:aquarium_diary/pages/forms/new_equipment_form_page.dart';
+import 'package:aquarium_diary/pages/forms/creature_status_change_form_page.dart';
+import 'package:aquarium_diary/pages/forms/equipment_status_change_form_page.dart';
 import 'package:aquarium_diary/pages/record_card.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/r.dart';
@@ -619,7 +625,7 @@ class _HomePageState extends State<HomePage>
   // 快速记录导航方法
   void _addWaterChange(BuildContext context) {
     if (homeAquarium == null) return;
-    RecordFormPage.addWaterChange(
+    WaterChangeFormPage.addWaterChange(
       context,
       aquariumId: homeAquarium!.id,
       isBottomSheet: true,
@@ -628,7 +634,7 @@ class _HomePageState extends State<HomePage>
 
   void _addFeeding(BuildContext context) {
     if (homeAquarium == null) return;
-    RecordFormPage.addFeeding(
+    FeedingFormPage.addFeeding(
       context,
       aquariumId: homeAquarium!.id,
       isBottomSheet: true,
@@ -637,7 +643,7 @@ class _HomePageState extends State<HomePage>
 
   void _addWaterQualityTest(BuildContext context) {
     if (homeAquarium == null) return;
-    RecordFormPage.addWaterQualityTest(
+    WaterQualityTestFormPage.addWaterQualityTest(
       context,
       aquariumId: homeAquarium!.id,
       testType: 'pH', // 默认测试类型
@@ -647,7 +653,7 @@ class _HomePageState extends State<HomePage>
 
   void _addNewCreature(BuildContext context) {
     if (homeAquarium == null) return;
-    RecordFormPage.addNewCreature(
+    NewCreatureFormPage.addNewCreature(
       context,
       aquariumId: homeAquarium!.id,
       creatureName: '新生物', // 默认生物名称
@@ -657,7 +663,7 @@ class _HomePageState extends State<HomePage>
 
   void _addNewEquipment(BuildContext context) {
     if (homeAquarium == null) return;
-    RecordFormPage.addNewEquipment(
+    NewEquipmentFormPage.addNewEquipment(
       context,
       aquariumId: homeAquarium!.id,
       equipmentName: '新设备', // 默认设备名称
