@@ -19,9 +19,9 @@ import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
+import 'package:aquarium_diary/tools/eazy_push.dart';
 import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
-import 'package:left_scroll_actions/left_scroll_actions.dart';
 import 'package:tapped/tapped.dart';
 
 // 功能按钮组件
@@ -272,8 +272,69 @@ class _HomePageState extends State<HomePage>
   }
 
   void _showRecordDetails(Record record) {
-    // TODO: 实现记录详情显示
-    print('显示记录详情: ${record.name}');
+    // 根据记录类型跳转到对应的编辑页面
+    final formPage = _getFormPageForRecord(record);
+    if (formPage == null) return;
+
+    formPage.pushAsPage<Record>(context).then((result) {
+      if (result != null) {
+        _loadRecords();
+      }
+    });
+  }
+
+  Widget? _getFormPageForRecord(Record record) {
+    final rt = record.recordType;
+    final ot = record.operationType;
+
+    switch (rt) {
+      case RecordType.maintenance:
+        return WaterChangeFormPage(
+          record: record,
+          aquariumId: record.aquariumId,
+        );
+      case RecordType.creature:
+        switch (ot) {
+          case OperationType.create:
+            return NewCreatureFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.sell:
+            return NewCreatureFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.statusChange:
+            return CreatureStatusChangeFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+        }
+      case RecordType.equipment:
+        switch (ot) {
+          case OperationType.create:
+            return NewEquipmentFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.sell:
+            return NewEquipmentFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.statusChange:
+            return EquipmentStatusChangeFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+        }
+      case RecordType.aquarium:
+        return WaterQualityTestFormPage(
+          record: record,
+          aquariumId: record.aquariumId,
+        );
+    }
   }
 
   void _showRecordActions(Record record) {
@@ -536,7 +597,6 @@ class _HomePageState extends State<HomePage>
               onAddEquipmentStatusChange: () => _addEquipmentStatusChange(),
             ),
             RecordCard(
-              aquariumId: homeAquarium?.id,
               records: _records,
               isLoading: _recordsLoading,
               onRecordTapped: _showRecordDetails,
