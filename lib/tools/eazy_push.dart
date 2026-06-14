@@ -16,7 +16,7 @@ extension EasyPush on Widget {
 
   Future<T?> pushAsActionSheet<T>(
     BuildContext context, {
-    double maxHeightRatio = 0.75,
+    double maxHeightRatio = 0.85,
   }) {
     return showModalBottomSheet<T>(
       context: context,

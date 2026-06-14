@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
-import 'package:aquarium_diary/pages/home_page.dart';
+import 'package:aquarium_diary/pages/home/home_page.dart';
 import 'package:aquarium_diary/style/theme.dart';
 import 'package:fconsole/fconsole.dart';
 import 'package:flutter/foundation.dart';

@@ -1,6 +1,7 @@
 // lib/pages/home_page.dart
 
 import 'package:aquarium_diary/database/_isar.dart';
+import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/record.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
@@ -12,7 +13,8 @@ import 'package:aquarium_diary/pages/forms/new_creature_form_page.dart';
 import 'package:aquarium_diary/pages/forms/new_equipment_form_page.dart';
 import 'package:aquarium_diary/pages/forms/creature_status_change_form_page.dart';
 import 'package:aquarium_diary/pages/forms/equipment_status_change_form_page.dart';
-import 'package:aquarium_diary/pages/record_card.dart';
+import 'package:aquarium_diary/pages/home/views/detail_tab_widget.dart';
+import 'package:aquarium_diary/pages/home/views/record_card_view.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
 import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/style/color.dart';
@@ -336,294 +338,8 @@ class _HomePageState extends State<HomePage>
     return expandedHeight - kToolbarHeight;
   }
 
-  // 构建详情tab
-  Widget _buildDetailTab() {
-    if (homeAquarium == null) {
-      return const Center(child: Text('请先选择鱼缸'));
-    }
-
-    final aquarium = homeAquarium!;
-    final waterCapacity = aquarium.capacityLiter ?? 0.0;
-    final days = aquarium.daysSinceSetup;
-    final startDate = aquarium.startDate;
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 基本信息卡片
-          Container(
-            decoration: BoxDecoration(
-              color: StColor.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StText.medium(
-                  '基本信息',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: StColor.darkGray,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                InfoRow(label: '鱼缸名称', value: aquarium.name),
-                InfoRow(label: '鱼缸结构', value: aquarium.structure.label),
-                if (startDate != null)
-                  InfoRow(
-                    label: '开缸时间',
-                    value:
-                        '${startDate.year}-${startDate.month}-${startDate.day}',
-                  ),
-                InfoRow(label: '开缸天数', value: '$days 天'),
-                if (waterCapacity > 0)
-                  InfoRow(
-                    label: '水体容量',
-                    value: '${waterCapacity.toStringAsFixed(1)}L',
-                  ),
-                if (aquarium.notes != null && aquarium.notes!.isNotEmpty)
-                  InfoRow(label: '备注', value: aquarium.notes!),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // 快速记录功能区
-          Container(
-            decoration: BoxDecoration(
-              color: StColor.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StText.medium(
-                  '快速记录',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: StColor.darkGray,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                StText.small(
-                  '选择记录类型快速记录鱼缸操作',
-                  style: TextStyle(color: StColor.gray),
-                ),
-                const SizedBox(height: 16),
-
-                // 功能按钮网格
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 1.2,
-                  children: [
-                    // 换水按钮
-                    FunctionButton(
-                      icon: Icons.water_drop,
-                      label: '换水',
-                      onTap: () => _addWaterChange(context),
-                      color: Colors.blue[50]!,
-                      iconColor: Colors.blue,
-                    ),
-                    // 喂食按钮
-                    FunctionButton(
-                      icon: Icons.restaurant,
-                      label: '喂食',
-                      onTap: () => _addFeeding(context),
-                      color: Colors.green[50]!,
-                      iconColor: Colors.green,
-                    ),
-                    // 水质测试按钮
-                    FunctionButton(
-                      icon: Icons.science,
-                      label: '水质测试',
-                      onTap: () => _addWaterQualityTest(context),
-                      color: Colors.purple[50]!,
-                      iconColor: Colors.purple,
-                    ),
-                    // 新购生物按钮
-                    FunctionButton(
-                      icon: Icons.pets,
-                      label: '新购生物',
-                      onTap: () => _addNewCreature(context),
-                      color: Colors.orange[50]!,
-                      iconColor: Colors.orange,
-                    ),
-                    // 新购设备按钮
-                    FunctionButton(
-                      icon: Icons.settings,
-                      label: '新购设备',
-                      onTap: () => _addNewEquipment(context),
-                      color: Colors.cyan[50]!,
-                      iconColor: Colors.cyan,
-                    ),
-                    // 生物状态变化按钮
-                    FunctionButton(
-                      icon: Icons.monitor_heart,
-                      label: '生物状态',
-                      onTap: () => _addCreatureStatusChange(context),
-                      color: Colors.pink[50]!,
-                      iconColor: Colors.pink,
-                    ),
-                    // 设备状态变化按钮
-                    FunctionButton(
-                      icon: Icons.build_circle,
-                      label: '设备状态',
-                      onTap: () => _addEquipmentStatusChange(context),
-                      color: Colors.teal[50]!,
-                      iconColor: Colors.teal,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 统计信息卡片
-          Container(
-            decoration: BoxDecoration(
-              color: StColor.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StText.medium(
-                  '统计信息',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: StColor.darkGray,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // 这里可以添加记录统计信息
-                StatCard(
-                  title: '总记录数',
-                  value: '0', // TODO: 从数据库获取
-                  icon: Icons.note_add,
-                  color: Colors.blue,
-                ),
-                const SizedBox(height: 12),
-                StatCard(
-                  title: '维护记录',
-                  value: '0', // TODO: 从数据库获取
-                  icon: Icons.build,
-                  color: Colors.green,
-                ),
-                const SizedBox(height: 12),
-                StatCard(
-                  title: '水质测试',
-                  value: '0', // TODO: 从数据库获取
-                  icon: Icons.science,
-                  color: Colors.purple,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 快速操作
-          Container(
-            decoration: BoxDecoration(
-              color: StColor.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StText.medium(
-                  '快速操作',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: StColor.darkGray,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      QuickAction(
-                        label: '水质测试',
-                        icon: Icons.science,
-                        color: StColor.primary,
-                        onTap: () {},
-                      ),
-                      QuickAction(
-                        label: '换水',
-                        icon: Icons.science,
-                        color: StColor.primary,
-                        onTap: () {},
-                      ),
-                      QuickAction(
-                        label: '喂食',
-                        icon: Icons.science,
-                        color: StColor.primary,
-                        onTap: () {},
-                      ),
-                      QuickAction(
-                        label: '新购生物',
-                        icon: Icons.note_add,
-                        color: StColor.primary,
-                        onTap: () {},
-                      ),
-                      QuickAction(
-                        label: '新购设备',
-                        icon: Icons.note_add,
-                        color: StColor.primary,
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // 快速记录导航方法
-  void _addWaterChange(BuildContext context) {
+  void _addWaterChange() {
     if (homeAquarium == null) return;
     WaterChangeFormPage.addWaterChange(
       context,
@@ -632,7 +348,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addFeeding(BuildContext context) {
+  void _addFeeding() {
     if (homeAquarium == null) return;
     FeedingFormPage.addFeeding(
       context,
@@ -641,7 +357,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addWaterQualityTest(BuildContext context) {
+  void _addWaterQualityTest() {
     if (homeAquarium == null) return;
     WaterQualityTestFormPage.addWaterQualityTest(
       context,
@@ -651,7 +367,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addNewCreature(BuildContext context) {
+  void _addNewCreature() {
     if (homeAquarium == null) return;
     NewCreatureFormPage.addNewCreature(
       context,
@@ -661,7 +377,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addNewEquipment(BuildContext context) {
+  void _addNewEquipment() {
     if (homeAquarium == null) return;
     NewEquipmentFormPage.addNewEquipment(
       context,
@@ -671,7 +387,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addCreatureStatusChange(BuildContext context) {
+  void _addCreatureStatusChange() {
     if (homeAquarium == null) return;
     // 对于状态变化，我们需要sourceId，暂时无法提供
     // 显示提示信息
@@ -685,7 +401,7 @@ class _HomePageState extends State<HomePage>
     _tabController.animateTo(1);
   }
 
-  void _addEquipmentStatusChange(BuildContext context) {
+  void _addEquipmentStatusChange() {
     if (homeAquarium == null) return;
     // 对于状态变化，我们需要sourceId，暂时无法提供
     // 显示提示信息
@@ -788,7 +504,7 @@ class _HomePageState extends State<HomePage>
                   labelColor: StColor.primary,
                   unselectedLabelColor: StColor.gray,
                   indicatorColor: StColor.primary,
-                  indicatorWeight: 3,
+                  indicatorWeight: 2,
                   tabs: const [
                     Tab(text: '详情'),
                     Tab(text: '记录'),
@@ -803,7 +519,22 @@ class _HomePageState extends State<HomePage>
         body: TabBarView(
           controller: _tabController,
           children: [
-            _buildDetailTab(),
+            DetailTabWidget(
+              aquarium: homeAquarium,
+              creatures: _records
+                  .where((r) => r.recordType == RecordType.creature)
+                  .toList(),
+              equipment: _records
+                  .where((r) => r.recordType == RecordType.equipment)
+                  .toList(),
+              onAddWaterChange: () => _addWaterChange(),
+              onAddFeeding: () => _addFeeding(),
+              onAddWaterQualityTest: () => _addWaterQualityTest(),
+              onAddNewCreature: () => _addNewCreature(),
+              onAddNewEquipment: () => _addNewEquipment(),
+              onAddCreatureStatusChange: () => _addCreatureStatusChange(),
+              onAddEquipmentStatusChange: () => _addEquipmentStatusChange(),
+            ),
             RecordCard(
               aquariumId: homeAquarium?.id,
               records: _records,
@@ -904,88 +635,6 @@ class AquariumCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// 以下列表组件保持不变（略）
-// ...
-// 通用列表项卡片
-class ListItemCard extends StatelessWidget {
-  final int id;
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final String? trailing;
-  final Function? onTap;
-  final Function? onRemove;
-
-  const ListItemCard({
-    Key? key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.trailing,
-    required this.id,
-    this.onTap,
-    this.onRemove,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: CupertinoLeftScroll(
-        key: ValueKey(id),
-        closeTag: LeftScrollCloseTag('home_list'),
-        onTap: () => onTap?.call(),
-        opacityChange: true,
-        buttons: [
-          Tapped(
-            onTap: onTap,
-            child: Container(
-              margin: EdgeInsets.all(4),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: StColor.error,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text('删除', style: TextStyle(color: Colors.white)),
-            ),
-          ),
-          // LeftScrollItem(color: StColor.error, text: '删除', onTap: onRemove),
-        ],
-        child: Container(
-          decoration: BoxDecoration(
-            color: StColor.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: StColor.lightGray,
-              child: Icon(icon, color: StColor.primary, size: 20),
-            ),
-            title: StText.medium(title),
-            subtitle: StText.small(
-              subtitle,
-              style: const TextStyle(color: StColor.gray),
-            ),
-            trailing: trailing != null
-                ? StText.medium(
-                    trailing!,
-                    style: const TextStyle(color: StColor.primary),
-                  )
-                : null,
-          ),
-        ),
       ),
     );
   }
