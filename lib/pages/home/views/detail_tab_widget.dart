@@ -1,11 +1,21 @@
 // lib/pages/home/views/detail_tab_widget.dart
 
+import 'dart:io';
+import 'dart:async';
+
+import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:aquarium_diary/database/models/record.dart';
+import 'package:aquarium_diary/pages/camera/select_gallery.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
+import 'package:aquarium_diary/tools/image_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:isar_community/isar.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tapped/tapped.dart';
 
 // 详情页独立组件
@@ -20,6 +30,7 @@ class DetailTabWidget extends StatefulWidget {
   final VoidCallback? onAddNewEquipment;
   final VoidCallback? onAddCreatureStatusChange;
   final VoidCallback? onAddEquipmentStatusChange;
+  final VoidCallback? onPhotosChanged;
 
   const DetailTabWidget({
     Key? key,
@@ -33,6 +44,7 @@ class DetailTabWidget extends StatefulWidget {
     this.onAddNewEquipment,
     this.onAddCreatureStatusChange,
     this.onAddEquipmentStatusChange,
+    this.onPhotosChanged,
   }) : super(key: key);
 
   @override
@@ -41,6 +53,86 @@ class DetailTabWidget extends StatefulWidget {
 
 class _DetailTabWidgetState extends State<DetailTabWidget> {
   bool _showCreatures = true;
+  List<Media> _photos = [];
+  bool _photosLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPhotos();
+  }
+
+  @override
+  void didUpdateWidget(covariant DetailTabWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.aquarium?.id != widget.aquarium?.id) {
+      _loadPhotos();
+    }
+  }
+
+  Future<void> _loadPhotos() async {
+    final aquariumId = widget.aquarium?.id;
+    if (aquariumId == null) return;
+    setState(() => _photosLoading = true);
+    try {
+      _photos = await isar.medias
+          .filter()
+          .refTypeEqualTo(RefType.aquarium)
+          .refIdEqualTo(aquariumId)
+          .build()
+          .findAll();
+      _photos.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    } catch (e) {
+      print('加载鱼缸照片失败: $e');
+    } finally {
+      setState(() => _photosLoading = false);
+    }
+  }
+
+  Future<void> _takePhoto() async {
+    final aquariumId = widget.aquarium?.id;
+    if (aquariumId == null) return;
+
+    final File? file = await selectImg(context);
+    if (file == null) return;
+
+    try {
+      // 保存文件到应用目录
+      final appDir = await getApplicationDocumentsDirectory();
+      final mediaDir = Directory('${appDir.path}/media/aquarium/$aquariumId');
+      if (!mediaDir.existsSync()) {
+        mediaDir.createSync(recursive: true);
+      }
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final ext = file.path.endsWith('png') ? 'png' : 'jpg';
+      final savedFile = await file.copy('${mediaDir.path}/$timestamp.$ext');
+
+      final media = Media(
+        mediaType: MediaType.image,
+        refType: RefType.aquarium,
+        refId: aquariumId,
+        filePath: savedFile.path,
+        fileName: '$timestamp.$ext',
+        fileSize: savedFile.lengthSync(),
+        mimeType: ext == 'png' ? 'image/png' : 'image/jpeg',
+        isPrimary: _photos.isEmpty,
+        sortOrder: _photos.length,
+        takenAt: DateTime.now(),
+        createdAt: DateTime.now(),
+      );
+
+      await isar.writeTxn(() async {
+        await isar.medias.put(media);
+      });
+
+      showToast('照片已保存');
+      _loadPhotos();
+      widget.onPhotosChanged?.call();
+    } catch (e) {
+      print('保存照片失败: $e');
+      showToast('保存照片失败');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +157,10 @@ class _DetailTabWidgetState extends State<DetailTabWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // 卡片0: 鱼缸照片
+          _buildPhotoCard(),
+          const SizedBox(height: 12),
+
           // 卡片1: 切换生物列表/设备列表
           _buildToggleCard(),
           const SizedBox(height: 12),
@@ -221,6 +317,184 @@ class _DetailTabWidgetState extends State<DetailTabWidget> {
         ],
       ),
     );
+  }
+
+  Widget _buildPhotoCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: StColor.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              StText.small(
+                '鱼缸照片',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: StColor.darkGray,
+                ),
+              ),
+              Tapped(
+                onTap: _takePhoto,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: StColor.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.camera_alt, size: 14, color: StColor.primary),
+                      const SizedBox(width: 4),
+                      StText.small(
+                        '拍照',
+                        style: const TextStyle(
+                          color: StColor.primary,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (_photosLoading)
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else if (_photos.isEmpty)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: [
+                  Icon(Icons.photo_camera, size: 40, color: StColor.halfGray),
+                  const SizedBox(height: 8),
+                  StText.small(
+                    '暂无照片，点击上方按钮拍照',
+                    style: const TextStyle(color: StColor.gray, fontSize: 12),
+                  ),
+                ],
+              ),
+            )
+          else
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _photos.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final photo = _photos[index];
+                  return Tapped(
+                    onTap: () => previewMutiImages(
+                      context,
+                      _photos.map((p) => p.filePath).toList(),
+                      index,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: ClipRect(
+                                child: Hero(
+                                  tag: photo.filePath,
+                                  child: Image.file(
+                                    File(photo.filePath),
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) => Container(
+                                      width: 100,
+                                      height: 100,
+                                      color: StColor.lightGray,
+                                      child: Icon(
+                                        Icons.broken_image,
+                                        color: StColor.halfGray,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (photo.isPrimary)
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: StColor.coral,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: StText.small(
+                                  '主图',
+                                  style: const TextStyle(
+                                    color: StColor.white,
+                                    fontSize: 9,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletePhoto(Media photo) async {
+    try {
+      // 删除文件
+      final file = File(photo.filePath);
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+      // 删除数据库记录
+      await isar.writeTxn(() async {
+        await isar.medias.delete(photo.id);
+      });
+      showToast('照片已删除');
+      _loadPhotos();
+      widget.onPhotosChanged?.call();
+    } catch (e) {
+      print('删除照片失败: $e');
+      showToast('删除照片失败');
+    }
   }
 
   Widget _buildWaterCard() {

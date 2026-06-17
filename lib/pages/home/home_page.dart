@@ -1,8 +1,11 @@
 // lib/pages/home_page.dart
 
+import 'dart:io';
+
 import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:aquarium_diary/database/models/record.dart';
 import 'package:aquarium_diary/global/userDefault.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
@@ -226,6 +229,7 @@ class _HomePageState extends State<HomePage>
   final ValueNotifier<Color> _titleColorNotifier = ValueNotifier(Colors.white);
 
   Aquarium? homeAquarium;
+  String? _aquariumPhotoPath;
 
   // 记录相关状态
   List<Record> _records = [];
@@ -235,7 +239,30 @@ class _HomePageState extends State<HomePage>
     final id = UserDefault.homePageAQ.value;
     if (id == null) return;
     homeAquarium = await isar.aquariums.get(id);
+    _loadPrimaryPhoto();
     setState(() {});
+  }
+
+  Future<void> _loadPrimaryPhoto() async {
+    final aquariumId = homeAquarium?.id;
+    if (aquariumId == null) return;
+    try {
+      final photos = await isar.medias
+          .filter()
+          .refTypeEqualTo(RefType.aquarium)
+          .refIdEqualTo(aquariumId)
+          .sortByCreatedAtDesc()
+          .findAll();
+      if (photos.isNotEmpty) {
+        _aquariumPhotoPath = photos
+            .firstWhere((p) => p.isPrimary, orElse: () => photos.first)
+            .filePath;
+      } else {
+        _aquariumPhotoPath = null;
+      }
+    } catch (e) {
+      _aquariumPhotoPath = null;
+    }
   }
 
   Future<void> _loadRecords() async {
@@ -555,6 +582,7 @@ class _HomePageState extends State<HomePage>
                   aquarium: homeAquarium!,
                   totalPrice: totalPrice,
                   daysSinceSetup: homeAquarium!.daysSinceSetup,
+                  photoPath: _aquariumPhotoPath,
                 ),
               ),
             ),
@@ -595,6 +623,10 @@ class _HomePageState extends State<HomePage>
               onAddNewEquipment: () => _addNewEquipment(),
               onAddCreatureStatusChange: () => _addCreatureStatusChange(),
               onAddEquipmentStatusChange: () => _addEquipmentStatusChange(),
+              onPhotosChanged: () {
+                _loadPrimaryPhoto();
+                setState(() {});
+              },
             ),
             RecordCard(
               records: _records,
@@ -615,6 +647,7 @@ class AquariumCard extends StatelessWidget {
   final Aquarium aquarium;
   final double totalPrice;
   final int daysSinceSetup;
+  final String? photoPath;
 
   const AquariumCard({
     Key? key,
@@ -622,6 +655,7 @@ class AquariumCard extends StatelessWidget {
     required this.aquarium,
     required this.totalPrice,
     required this.daysSinceSetup,
+    this.photoPath,
   }) : super(key: key);
 
   @override
@@ -636,17 +670,39 @@ class AquariumCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 主图（无圆角）
-          Image.asset(
-            R.aqTestMainImg, // 替换为 aquarium.mainImage
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: StColor.lightGray,
-              child: Center(
-                child: Icon(Icons.image_not_supported, color: StColor.halfGray),
+          // 主图（从鱼缸照片取第一张，没有则用默认图）
+          if (photoPath != null)
+            Image.file(
+              File(photoPath!),
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Image.asset(
+                R.aqTestMainImg,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: StColor.lightGray,
+                  child: Center(
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: StColor.halfGray,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            Image.asset(
+              R.aqTestMainImg,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: StColor.lightGray,
+                child: Center(
+                  child: Icon(
+                    Icons.image_not_supported,
+                    color: StColor.halfGray,
+                  ),
+                ),
               ),
             ),
-          ),
           // 渐变遮罩（无圆角）
           Positioned.fill(
             child: Container(
