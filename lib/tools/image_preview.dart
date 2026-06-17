@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
+import 'package:aquarium_diary/tools/image_actions.dart';
 import 'package:aquarium_diary/tools/image_share.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:fconsole/fconsole.dart';
@@ -101,14 +103,14 @@ previewImage(
   );
 }
 
-/// 预览多张图片
-previewMutiImages(BuildContext context, List<String> list, int index) {
-  List<dynamic> providers = list.map((url) {
-    bool _isWebImage = url.startsWith('http');
+/// 预览多张图片（支持Media对象，操作时用showMediaActions）
+previewMutiImages(BuildContext context, List<Media> medias, int index) {
+  List<dynamic> providers = medias.map((m) {
+    bool _isWebImage = m.filePath.startsWith('http');
 
     dynamic provider = _isWebImage
-        ? ExtendedNetworkImageProvider('$url', cache: true)
-        : ExtendedFileImageProvider(File(url));
+        ? ExtendedNetworkImageProvider(m.filePath, cache: true)
+        : ExtendedFileImageProvider(File(m.filePath));
     return provider;
   }).toList();
   final Size size = MediaQuery.of(context).size;
@@ -126,7 +128,7 @@ previewMutiImages(BuildContext context, List<String> list, int index) {
         slideType: SlideType.onlyImage,
         slideAxis: SlideAxis.both,
         child: ExtendedImageGesturePageView.builder(
-          itemCount: list.length,
+          itemCount: medias.length,
           physics: CustomScrollPhysics(),
           controller: ExtendedPageController(initialPage: index),
           itemBuilder: (BuildContext context, int index) {
@@ -158,8 +160,6 @@ previewMutiImages(BuildContext context, List<String> list, int index) {
                   maxScale: max(initialScale, 5.0),
                   animationMaxScale: max(initialScale, 5.0),
                   initialAlignment: InitialAlignment.center,
-                  //you can cache gesture state even though page view page change.
-                  //remember call clearGestureDetailsCache() method at the right time.(for example,this page dispose)
                   cacheGesture: false,
                 );
               },
@@ -169,10 +169,9 @@ previewMutiImages(BuildContext context, List<String> list, int index) {
               behavior: HitTestBehavior.opaque,
               onTap: () => Navigator.of(context).pop(),
               onLongPress: () {
-                // 分享/保存图片
-                shareOrSaveImage(context, image: provider);
+                showMediaActions(context, media: medias[index]);
               },
-              child: Hero(tag: list[index], child: image),
+              child: Hero(tag: medias[index].filePath, child: image),
             );
           },
           onPageChanged: (int pageIndex) {

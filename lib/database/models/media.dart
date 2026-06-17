@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:isar_community/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
 part 'media.g.dart';
 
@@ -20,7 +24,7 @@ class Media {
   /// 媒体文件路径（图片或视频文件）
   late String filePath;
 
-  /// 视频封面路径（仅视频有效）
+  /// 缩略图路径
   String? thumbnailPath;
 
   /// 文件名
@@ -123,6 +127,66 @@ class Media {
   @override
   String toString() {
     return 'Media{id: $id, mediaType: $mediaType, refType: ${refType.label}, refId: $refId, filePath: $filePath, isPrimary: $isPrimary}';
+  }
+
+  /// 从拍照/选择的文件保存为Media记录
+  /// 会生成300px缩略图并自动填充thumbnailPath
+  static Future<Media> saveFromFile({
+    required File file,
+    required RefType refType,
+    required int refId,
+    bool isPrimary = false,
+    int sortOrder = 0,
+  }) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final mediaDir = Directory('${appDir.path}/media/${refType.name}/$refId');
+    if (!mediaDir.existsSync()) {
+      mediaDir.createSync(recursive: true);
+    }
+
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final ext = file.path.endsWith('png') ? 'png' : 'jpg';
+    final fileName = '$timestamp.$ext';
+
+    // 保存原图
+    final savedFile = await file.copy('${mediaDir.path}/$fileName');
+
+    // 生成300px缩略图
+    final thumbDir = Directory('${mediaDir.path}/thumb');
+    if (!thumbDir.existsSync()) {
+      thumbDir.createSync(recursive: true);
+    }
+    final thumbFile = File('${thumbDir.path}/$fileName');
+
+    try {
+      final thumbBytes = await FlutterImageCompress.compressWithList(
+        savedFile.readAsBytesSync(),
+        minWidth: 300,
+        minHeight: 300,
+        quality: 80,
+        format: ext == 'png' ? CompressFormat.png : CompressFormat.jpeg,
+      );
+      await thumbFile.writeAsBytes(thumbBytes);
+    } catch (e) {
+      print('生成缩略图失败: $e');
+      // 缩略图生成失败时不阻塞，直接用原图
+    }
+
+    final now = DateTime.now();
+    return Media(
+      mediaType: MediaType.image,
+      refType: refType,
+      refId: refId,
+      filePath: savedFile.path,
+      thumbnailPath: thumbFile.existsSync() ? thumbFile.path : null,
+      fileName: fileName,
+      fileSize: savedFile.lengthSync(),
+      mimeType: ext == 'png' ? 'image/png' : 'image/jpeg',
+      isPrimary: isPrimary,
+      sortOrder: sortOrder,
+      takenAt: now,
+      createdAt: now,
+    );
   }
 }
 

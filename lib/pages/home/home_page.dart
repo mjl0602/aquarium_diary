@@ -16,6 +16,7 @@ import 'package:aquarium_diary/pages/forms/new_creature_form_page.dart';
 import 'package:aquarium_diary/pages/forms/new_equipment_form_page.dart';
 import 'package:aquarium_diary/pages/forms/creature_status_change_form_page.dart';
 import 'package:aquarium_diary/pages/forms/equipment_status_change_form_page.dart';
+import 'package:aquarium_diary/pages/home/views/album_tab_widget.dart';
 import 'package:aquarium_diary/pages/home/views/detail_tab_widget.dart';
 import 'package:aquarium_diary/pages/home/views/record_card_view.dart';
 import 'package:aquarium_diary/pages/views/aquarium_action_sheet.dart';
@@ -27,190 +28,6 @@ import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
 import 'package:tapped/tapped.dart';
 
-// 功能按钮组件
-class FunctionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color color;
-  final Color iconColor;
-
-  const FunctionButton({
-    Key? key,
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    required this.color,
-    required this.iconColor,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor, size: 28),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: StColor.darkGray,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// 统计卡片组件
-class StatCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
-
-  const StatCard({
-    Key? key,
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(icon, size: 20, color: color),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              StText.small(title, style: TextStyle(color: StColor.gray)),
-              StText.medium(
-                value,
-                style: TextStyle(color: color, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// 快速操作按钮组件
-class QuickAction extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-
-  const QuickAction({
-    Key? key,
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Tapped(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 20, color: color),
-            const SizedBox(width: 8),
-            StText.small(
-              label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// 信息行组件
-class InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const InfoRow({Key? key, required this.label, required this.value})
-    : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: StText.small(label, style: TextStyle(color: StColor.gray)),
-          ),
-          Expanded(
-            flex: 2,
-            child: StText.small(
-              value,
-              style: const TextStyle(
-                color: StColor.darkGray,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -220,7 +37,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController = TabController(length: 2, vsync: this);
+  late TabController _tabController = TabController(length: 3, vsync: this);
   late ScrollController _scrollController;
 
   double get headerAspectRatio => 12 / 16;
@@ -254,9 +71,11 @@ class _HomePageState extends State<HomePage>
           .sortByCreatedAtDesc()
           .findAll();
       if (photos.isNotEmpty) {
-        _aquariumPhotoPath = photos
-            .firstWhere((p) => p.isPrimary, orElse: () => photos.first)
-            .filePath;
+        final primary = photos.firstWhere(
+          (p) => p.isPrimary,
+          orElse: () => photos.first,
+        );
+        _aquariumPhotoPath = primary.thumbnailPath ?? primary.filePath;
       } else {
         _aquariumPhotoPath = null;
       }
@@ -596,6 +415,7 @@ class _HomePageState extends State<HomePage>
                   indicatorWeight: 2,
                   tabs: const [
                     Tab(text: '详情'),
+                    Tab(text: '相册'),
                     Tab(text: '记录'),
                   ],
                 ),
@@ -623,6 +443,9 @@ class _HomePageState extends State<HomePage>
               onAddNewEquipment: () => _addNewEquipment(),
               onAddCreatureStatusChange: () => _addCreatureStatusChange(),
               onAddEquipmentStatusChange: () => _addEquipmentStatusChange(),
+            ),
+            AlbumTabWidget(
+              aquarium: homeAquarium,
               onPhotosChanged: () {
                 _loadPrimaryPhoto();
                 setState(() {});
