@@ -1,9 +1,11 @@
 // lib/widgets/aquarium_selector.dart
 
+import 'dart:io';
+
 import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
-import 'package:aquarium_diary/global/userDefault.dart';
+import 'package:aquarium_diary/database/models/media.dart';
 import 'package:aquarium_diary/pages/forms/aquarium_form_page.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
@@ -48,8 +50,34 @@ class AquariumSelector extends StatefulWidget {
 
 class _AquariumSelectorState extends State<AquariumSelector> {
   List<Aquarium> aquariums = [];
+
+  /// 鱼缸ID -> 主图路径
+  final Map<int, String?> _photoPaths = {};
+
   loadData() async {
     aquariums = await isar.aquariums.where().findAll();
+    // 加载每个鱼缸的主图
+    for (final aq in aquariums) {
+      _loadPrimaryPhoto(aq.id);
+    }
+    setState(() {});
+  }
+
+  Future<void> _loadPrimaryPhoto(int aquariumId) async {
+    try {
+      final photos = await isar.medias
+          .filter()
+          .refTypeEqualTo(RefType.aquarium)
+          .refIdEqualTo(aquariumId)
+          .findAll();
+      if (photos.isNotEmpty) {
+        final primary = photos.firstWhere(
+          (p) => p.isPrimary,
+          orElse: () => photos.first,
+        );
+        _photoPaths[aquariumId] = primary.thumbnailPath ?? primary.filePath;
+      }
+    } catch (_) {}
     setState(() {});
   }
 
@@ -164,6 +192,7 @@ class _AquariumSelectorState extends State<AquariumSelector> {
     bool isSelected,
     BuildContext context,
   ) {
+    final photoPath = _photoPaths[aquarium.id];
     return Tapped(
       onTap: () {
         Navigator.pop(context, aquarium);
@@ -172,7 +201,7 @@ class _AquariumSelectorState extends State<AquariumSelector> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
-            // 图标（可根据结构显示不同图标）
+            // 鱼缸主图
             Container(
               width: 120,
               height: 90,
@@ -180,11 +209,19 @@ class _AquariumSelectorState extends State<AquariumSelector> {
                 color: StColor.lightGray,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                _getStructureIcon(aquarium.structure),
-                color: StColor.primary,
-                size: 20,
-              ),
+              clipBehavior: Clip.antiAlias,
+              child: photoPath != null
+                  ? Image.file(
+                      File(photoPath),
+                      fit: BoxFit.cover,
+                      width: 120,
+                      height: 90,
+                    )
+                  : Icon(
+                      _getStructureIcon(aquarium.structure),
+                      color: StColor.primary,
+                      size: 20,
+                    ),
             ),
             const SizedBox(width: 12),
             // 鱼缸信息

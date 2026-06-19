@@ -184,6 +184,8 @@ class RecordCard extends StatelessWidget {
       case OperationType.create:
         return Colors.teal;
       case OperationType.sell:
+        return Colors.blue;
+      case OperationType.loss:
         return Colors.red;
       case OperationType.statusChange:
         return Colors.amber;

@@ -24,6 +24,8 @@ import 'package:aquarium_diary/r.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:aquarium_diary/tools/eazy_push.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:aquarium_diary/tools/record_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:isar_community/isar.dart';
 import 'package:tapped/tapped.dart';
@@ -52,7 +54,7 @@ class _HomePageState extends State<HomePage>
   List<Record> _records = [];
   bool _recordsLoading = true;
 
-  loadHomePageAqua() async {
+  Future<void> loadHomePageAqua() async {
     final id = UserDefault.homePageAQ.value;
     if (id == null) return;
     homeAquarium = await isar.aquariums.get(id);
@@ -113,10 +115,6 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _refreshRecords() async {
-    await _loadRecords();
-  }
-
   void _showRecordDetails(Record record) {
     // 根据记录类型跳转到对应的编辑页面
     final formPage = _getFormPageForRecord(record);
@@ -129,6 +127,7 @@ class _HomePageState extends State<HomePage>
     });
   }
 
+  /// 跳转不同记录类型对应页面
   Widget? _getFormPageForRecord(Record record) {
     final rt = record.recordType;
     final ot = record.operationType;
@@ -147,7 +146,12 @@ class _HomePageState extends State<HomePage>
               aquariumId: record.aquariumId,
             );
           case OperationType.sell:
-            return NewCreatureFormPage(
+            return CreatureStatusChangeFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.loss:
+            return CreatureStatusChangeFormPage(
               record: record,
               aquariumId: record.aquariumId,
             );
@@ -165,7 +169,12 @@ class _HomePageState extends State<HomePage>
               aquariumId: record.aquariumId,
             );
           case OperationType.sell:
-            return NewEquipmentFormPage(
+            return CreatureStatusChangeFormPage(
+              record: record,
+              aquariumId: record.aquariumId,
+            );
+          case OperationType.loss:
+            return CreatureStatusChangeFormPage(
               record: record,
               aquariumId: record.aquariumId,
             );
@@ -183,9 +192,22 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  void _showRecordActions(Record record) {
-    // TODO: 实现记录操作菜单
-    print('显示记录操作: ${record.name}');
+  Future<void> _showRecordActions(Record record) async {
+    final action = await showRecordActions(context, record: record);
+    if (action == null) return;
+
+    switch (action) {
+      case RecordAction.edit:
+        _showRecordDetails(record);
+        break;
+      case RecordAction.delete:
+        await isar.writeTxn(() async {
+          await isar.records.delete(record.id);
+        });
+        showToast('已删除');
+        _loadRecords();
+        break;
+    }
   }
 
   // 模拟总价格和开缸天数（实际应计算得出）
@@ -198,7 +220,8 @@ class _HomePageState extends State<HomePage>
     );
     if (selected != null) {
       UserDefault.homePageAQ.value = selected.id;
-      loadHomePageAqua();
+      await loadHomePageAqua();
+      _loadRecords();
     }
   }
 
@@ -274,24 +297,30 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _addNewCreature() {
+  Future<void> _addNewCreature() async {
     if (homeAquarium == null) return;
-    NewCreatureFormPage.addNewCreature(
+    final result = await NewCreatureFormPage.addNewCreature(
       context,
       aquariumId: homeAquarium!.id,
-      creatureName: '新生物', // 默认生物名称
+      creatureName: '新生物',
       isBottomSheet: true,
     );
+    if (result != null) {
+      _loadRecords();
+    }
   }
 
-  void _addNewEquipment() {
+  Future<void> _addNewEquipment() async {
     if (homeAquarium == null) return;
-    NewEquipmentFormPage.addNewEquipment(
+    final result = await NewEquipmentFormPage.addNewEquipment(
       context,
       aquariumId: homeAquarium!.id,
-      equipmentName: '新设备', // 默认设备名称
+      equipmentName: '新设备',
       isBottomSheet: true,
     );
+    if (result != null) {
+      _loadRecords();
+    }
   }
 
   void _addCreatureStatusChange() {

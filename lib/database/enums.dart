@@ -334,6 +334,7 @@ enum RecordType {
 enum OperationType {
   create, // 创建
   sell, // 卖出
+  loss, // 损失
   statusChange; // 状态变化
 
   String get label {
@@ -342,6 +343,8 @@ enum OperationType {
         return '创建';
       case OperationType.sell:
         return '卖出';
+      case OperationType.loss:
+        return '损失';
       case OperationType.statusChange:
         return '状态变化';
     }

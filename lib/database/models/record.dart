@@ -1,7 +1,8 @@
 // lib/database/models/record.dart
 
-import 'package:isar_community/isar.dart';
+import 'package:aquarium_diary/database/_isar.dart';
 import 'package:aquarium_diary/database/enums.dart';
+import 'package:isar_community/isar.dart';
 
 part 'record.g.dart';
 
@@ -281,5 +282,39 @@ class Record {
       createdAt: DateTime.now(),
       notes: notes,
     );
+  }
+
+  /// 查询鱼缸中现存的所有生物列表
+  /// 逻辑：每个 RecordType.creature + OperationType.create 且没有后续卖出/损失记录的为一个生物
+  static Future<List<Record>> getCreatures(int aquariumId) async {
+    // 获取该鱼缸所有生物相关的记录
+    final allRecords = await isar.records
+        .filter()
+        .aquariumIdEqualTo(aquariumId)
+        .recordTypeEqualTo(RecordType.creature)
+        .findAll();
+
+    // 收集被卖出或损失的 sourceId
+    final closedIds = <int>{};
+    for (final r in allRecords) {
+      if (r.sourceId != null &&
+          (r.operationType == OperationType.sell ||
+              r.operationType == OperationType.loss)) {
+        closedIds.add(r.sourceId!);
+      }
+    }
+
+    // 筛选创建记录中未被关闭的
+    final creatures = <Record>[];
+    for (final r in allRecords) {
+      if (r.operationType == OperationType.create &&
+          (r.sourceId == null || !closedIds.contains(r.sourceId))) {
+        creatures.add(r);
+      }
+    }
+
+    // 按记录时间排序
+    creatures.sort((a, b) => b.recordTime.compareTo(a.recordTime));
+    return creatures;
   }
 }

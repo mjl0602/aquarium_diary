@@ -1,8 +1,9 @@
 // lib/pages/home/views/detail_tab_widget.dart
 
-import 'package:aquarium_diary/database/enums.dart';
 import 'package:aquarium_diary/database/models/aquarium.dart';
 import 'package:aquarium_diary/database/models/record.dart';
+import 'package:aquarium_diary/pages/home/views/creature_list_page.dart';
+import 'package:aquarium_diary/pages/home/views/equipment_list_page.dart';
 import 'package:aquarium_diary/style/color.dart';
 import 'package:aquarium_diary/style/text.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +41,6 @@ class DetailTabWidget extends StatefulWidget {
 }
 
 class _DetailTabWidgetState extends State<DetailTabWidget> {
-  bool _showCreatures = true;
-
   @override
   Widget build(BuildContext context) {
     if (widget.aquarium == null) {
@@ -81,8 +80,8 @@ class _DetailTabWidgetState extends State<DetailTabWidget> {
   }
 
   Widget _buildToggleCard() {
-    final items = _showCreatures ? widget.creatures : widget.equipment;
-    final label = _showCreatures ? '生物' : '设备';
+    final creatureCount = widget.creatures.length;
+    final equipmentCount = widget.equipment.length;
 
     return Container(
       decoration: BoxDecoration(
@@ -97,126 +96,74 @@ class _DetailTabWidgetState extends State<DetailTabWidget> {
         ],
       ),
       padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // 紧凑切换按钮
-          Container(
-            decoration: BoxDecoration(
-              color: StColor.lightGray,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.all(2),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildTabOption('生物', true, null),
-                const SizedBox(width: 2),
-                _buildTabOption('设备', false, null),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          // 列表内容
-          if (items.isEmpty)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: StText.small(
-                '暂无$label记录',
-                style: const TextStyle(color: StColor.gray, fontSize: 12),
-              ),
-            )
-          else
-            ...List.generate(
-              items.length > 3 ? 3 : items.length,
-              (i) => _buildRecordItem(items[i]),
-            ),
-
-          // 查看更多
-          if (items.length > 3)
-            Tapped(
-              onTap: () {},
-              child: Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Center(
-                  child: StText.small(
-                    '查看更多',
-                    style: TextStyle(
-                      color: StColor.primary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
+          Expanded(
+            child: Tapped(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => CreatureListPage(
+                    aquarium: widget.aquarium,
+                    creatures: widget.creatures,
                   ),
                 ),
               ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.pets, color: Colors.blue, size: 32),
+                    const SizedBox(height: 8),
+                    StText.small(
+                      '$creatureCount个生物',
+                      style: const TextStyle(
+                        color: StColor.darkGray,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabOption(String label, bool isSelected, VoidCallback? onTap) {
-    if (isSelected) {
-      return Tapped(
-        onTap: () => setState(() => _showCreatures = true),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          decoration: BoxDecoration(
-            color: StColor.primary,
-            borderRadius: BorderRadius.circular(18),
           ),
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: StColor.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Tapped(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => EquipmentListPage(
+                    aquarium: widget.aquarium,
+                    equipment: widget.equipment,
+                  ),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.teal.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.settings, color: Colors.teal, size: 32),
+                    const SizedBox(height: 8),
+                    StText.small(
+                      '$equipmentCount个设备',
+                      style: const TextStyle(
+                        color: StColor.darkGray,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    }
-    return Tapped(
-      onTap: () => setState(() => _showCreatures = false),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: StColor.gray,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRecordItem(Record record) {
-    final color = record.recordType == RecordType.creature
-        ? Colors.blue
-        : Colors.teal;
-    final icon = record.recordType == RecordType.creature
-        ? Icons.pets
-        : Icons.settings;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Icon(icon, size: 14, color: color),
-          ),
-          const SizedBox(width: 8),
-          StText.small(
-            record.name,
-            style: const TextStyle(color: StColor.darkGray, fontSize: 12),
           ),
         ],
       ),
